@@ -32,9 +32,9 @@ class BaseHandler(webapp2.RequestHandler):
         else:
         	self.redirect(users.create_login_url(self.request.uri))
 
-class Upload(webapp2.RequestHandler):
+class Upload(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
     def get(self):
-        upload_url = blobstore.create_upload_url('/uploader')
+        upload_url = blobstore.create_upload_url('/upload')
  
         html_string = """
          <form action="%s" method="POST" enctype="multipart/form-data">
@@ -44,9 +44,7 @@ class Upload(webapp2.RequestHandler):
         </form>""" % upload_url
  
         self.response.write(html_string)
- 
- 
-class UploadHandler(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
+
     def post(self):
         upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
         blob_info = upload_files[0]
@@ -54,6 +52,7 @@ class UploadHandler(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
  
         blobstore.delete(blob_info.key())  # optional: delete file after import
         self.redirect("/")
+    
  
 # helper functions
 def convert_string_to_date(dateString):
@@ -122,6 +121,5 @@ class MainPage(BaseHandler):
 
 application = webapp2.WSGIApplication([
     ('/',MainPage)
-   ,('/upload',Upload)
-   ,('/uploader',UploadHandler)
+   ,('/upload',Upload)   
 ], debug=True)
