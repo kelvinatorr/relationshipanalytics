@@ -73,25 +73,35 @@ def convert_string_to_date(dateString):
 def process_csv(blob_info):
     blob_reader = blobstore.BlobReader(blob_info.key())
     reader = csv.reader(blob_reader, delimiter=',', quotechar='"')
-    for row in reader:    	
+    for row in reader:
+        city_state = row[2].split(',')
+        if row[11] == '':
+            average_rating = None
+        else:
+            average_rating = float(row[11])      
     	r = dict(RestaurantName = row[0]
 					,CuisineType = row[1]
-					,City = row[2]
-					,State = row[3]
-					,NotesComments = row[4]
-					,Completed = bool(int(row[5]))
-					,FirstTripDate = convert_string_to_date(row[6])
-					,LastVisitDate = convert_string_to_date(row[7])
-					,NumberOfTrips = int(row[8])
-					,DaysSinceLastTrip = int(row[9])
-					,P1Rating = int(row[10])
-					,P2Rating = int(row[11])
-					,AverageRating = float(row[12])
+					,City = city_state[0].strip()
+					,State = city_state[1].strip()
+					,NotesComments = row[3]
+					,Completed = bool(int(row[4]))
+					,FirstTripDate = convert_string_to_date(row[5])
+					,LastVisitDate = convert_string_to_date(row[6])
+					,NumberOfTrips = int_or_null(row[7])
+					,DaysSinceLastTrip = int_or_null(row[8])
+					,P1Rating = int_or_null(row[9])
+					,P2Rating = int_or_null(row[10])
+					,AverageRating = average_rating
     				)
-
         # date, data, value = row
         entry = HitList(**r)
         entry.put()
+
+def int_or_null(data):
+    if data != '':
+        return int(data)
+    else:
+        return None
 
 # data models
 class HitList(db.Model):
@@ -109,11 +119,16 @@ class HitList(db.Model):
 	P2Rating = db.IntegerProperty()
 	AverageRating = db.FloatProperty()
 
+class Couple(db.Model):
+    p1 = db.StringProperty(required = True)
+    p2 = db.StringProperty()
+
 
 #url handlers
 class MainPage(BaseHandler):
     def get(self):
-        self.render('index.html')
+        self.write(self.user.nickname())
+        # self.render('index.html')
 
 
 
