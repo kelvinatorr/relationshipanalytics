@@ -3,11 +3,13 @@ import jinja2
 import os
 import csv
 import datetime
-
+import re
+import logging
 from google.appengine.api import users
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
 from google.appengine.ext import db
+from google.appengine.api import memcache
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
@@ -48,13 +50,79 @@ class Upload(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
     def post(self):
         upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
         blob_info = upload_files[0]
-        process_csv(blob_info)
+        # Get the current user's Couple entity to set it as a ancestor for each entry in the csv.Dialect
+        couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+        process_csv(blob_info,couple_key)
  
         blobstore.delete(blob_info.key())  # optional: delete file after import
         self.redirect("/")
-    
+
+class Register(BaseHandler):
+    def get(self):
+        self.render('register.html')
+
+    def post(self):
+        invite_email = self.request.get('invite_email')
+
+        failed = False
+        if not valid_username('username',invite_email):
+            failed = True
+            error_invite_email = 'Please enter a valid gmail address, including "@gmail.com"'
+
+        if failed:
+            self.render('register.html',invite_email=invite_email,error_invite_email=error_invite_email)
+        else:            
+            # Initialize new Couple entity. with P2Email as invite_email.
+            couple = Couple(P1=self.user.user_id(),P1Email=self.user.email(),P1Nickname=self.user.nickname()
+                            ,P2Email=invite_email)
+            couple.put()
+            self.write('Good job!')
+
+class Confirm(BaseHandler):
+    def get(self):
+        # TODO:Check if email is in db. Entered by the inviter.
+        # If yes then create new user entity. and update Couple class to have a value for p2 google_id        
+        couple = Couple.by_P2Email(self.user.email())
+        if couple:
+            couple.P2 = self.user.user_id()
+            couple.P2Nickname = self.user.nickname()
+            couple.put()
+            self.write('success %s!' % self.user.nickname())
+        else:
+            self.write('Your account is not associated with anyone. Would you like to create a new shared account?')
+
+class MainPage(BaseHandler):
+    def get(self):
+        # self.write(self.user.nickname())
+        # Query all Eatery entities whose ancestor is the user's Couple
+        couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+        hitlist = Eatery.all().ancestor(couple_key).run()
+        counter = 0
+        for e in hitlist:
+            counter += 1
+        self.write(counter)
+        # self.render('index.html')
+
+# Memcache functions.
+def cache_entity(key,entity_key,entity_query_function,update=False):
+    obj = memcache.get(key)    
+    if not obj or update:        
+        logging.error('User query for' + key)        
+        # entity query function must return the actual object!
+        obj = entity_query_function(entity_key)
+        memcache.set(key,obj)
+    return obj
+
  
 # helper functions
+valid_dict = {'username':r"^[\S]+@gmail\.[\S]+$" 
+              ,'password':r"^.{6,20}$"          
+              }
+
+def valid_username(string_type,target_string):
+    regex = re.compile(valid_dict[string_type])
+    return regex.match(target_string)
+
 def convert_string_to_date(dateString):
     """
     Converts string date time to Python date object by trying multiple
@@ -70,7 +138,7 @@ def convert_string_to_date(dateString):
             pass
     return res
 
-def process_csv(blob_info):
+def process_csv(blob_info,couple_key):
     blob_reader = blobstore.BlobReader(blob_info.key())
     reader = csv.reader(blob_reader, delimiter=',', quotechar='"')
     for row in reader:
@@ -78,7 +146,8 @@ def process_csv(blob_info):
         if row[11] == '':
             average_rating = None
         else:
-            average_rating = float(row[11])      
+            average_rating = float(row[11])
+
     	r = dict(RestaurantName = row[0]
 					,CuisineType = row[1]
 					,City = city_state[0].strip()
@@ -92,9 +161,9 @@ def process_csv(blob_info):
 					,P1Rating = int_or_null(row[9])
 					,P2Rating = int_or_null(row[10])
 					,AverageRating = average_rating
-    				)
-        # date, data, value = row
-        entry = HitList(**r)
+                    ,parent=couple_key
+    				)        
+        entry = Eatery(**r)
         entry.put()
 
 def int_or_null(data):
@@ -104,37 +173,46 @@ def int_or_null(data):
         return None
 
 # data models
-class HitList(db.Model):
-	RestaurantName = db.StringProperty(required = True)
-	CuisineType = db.StringProperty()
-	City = db.StringProperty()
-	State = db.StringProperty()
-	NotesComments = db.StringProperty()
-	Completed = db.BooleanProperty()
-	FirstTripDate = db.DateProperty()
-	LastVisitDate = db.DateProperty()
-	NumberOfTrips = db.IntegerProperty()
-	DaysSinceLastTrip = db.IntegerProperty()
-	P1Rating = db.IntegerProperty()
-	P2Rating = db.IntegerProperty()
-	AverageRating = db.FloatProperty()
+class Eatery(db.Model):
+    RestaurantName = db.StringProperty(required = True)
+    CuisineType = db.StringProperty()
+    City = db.StringProperty()
+    State = db.StringProperty()
+    NotesComments = db.StringProperty()
+    Completed = db.BooleanProperty()
+    FirstTripDate = db.DateProperty()
+    LastVisitDate = db.DateProperty()
+    NumberOfTrips = db.IntegerProperty()
+    DaysSinceLastTrip = db.IntegerProperty()
+    P1Rating = db.IntegerProperty()
+    P2Rating = db.IntegerProperty()
+    AverageRating = db.FloatProperty()
 
 class Couple(db.Model):
-    p1 = db.StringProperty(required = True)
-    p2 = db.StringProperty()
+    P1 = db.StringProperty(required = True)
+    P1Email = db.StringProperty()
+    P1Nickname = db.StringProperty()
+    P2 = db.StringProperty()
+    P2Email = db.StringProperty(required=True)
+    P2Nickname = db.StringProperty()
 
+    @classmethod
+    def by_P2Email(cls, p2_email):
+        sub = cls.all().filter('P2Email =', p2_email).get()
+        return sub
+
+    @classmethod
+    def by_user_id(cls,user_id,keys_only=False):
+        couple = cls.all(keys_only=keys_only).filter('P1 =', user_id).get()
+        if not couple:
+            couple = cls.all(keys_only=keys_only).filter('P2 =', user_id).get()
+        return couple
 
 #url handlers
-class MainPage(BaseHandler):
-    def get(self):
-        self.write(self.user.nickname())
-        # self.render('index.html')
-
-
-
-
 
 application = webapp2.WSGIApplication([
     ('/',MainPage)
    ,('/upload',Upload)   
+   ,('/register',Register)
+   ,('/confirm',Confirm)
 ], debug=True)

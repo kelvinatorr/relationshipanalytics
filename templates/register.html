@@ -1,0 +1,9 @@
+{% extends "form-base.html" %}
+{% block content %}
+        <h2 class="form-signin-heading">Enter you partner's Gmail Address</h2>        
+        <input type="text" class="form-control" placeholder="Email Address" name="invite_email" value="{{invite_email}}" required autofocus>
+        <h4 id="error">{{error_invite_email}}</h4>        
+        <button class="btn btn-lg btn-primary btn-block" type="submit" name="submit" value="Submit">Submit</button>
+        <button class="btn btn-lg btn-primary btn-block" type="button" name="canceler" value="Cancel" onClick="window.location='/'">Cancel</button>
+
+{% endblock %}

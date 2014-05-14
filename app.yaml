@@ -27,3 +27,4 @@ handlers:
 - url: /.*
   script: relationshipanalytics.application
   secure: always
+  login: required
