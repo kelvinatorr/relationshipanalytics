@@ -5,6 +5,8 @@ import csv
 import datetime
 import re
 import logging
+from time import sleep
+
 from google.appengine.api import users
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
@@ -53,8 +55,11 @@ class Upload(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
         # Get the current user's Couple entity to set it as a ancestor for each entry in the csv.Dialect
         couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
         process_csv(blob_info,couple_key)
- 
-        blobstore.delete(blob_info.key())  # optional: delete file after import
+        # Delete file after import
+        blobstore.delete(blob_info.key())
+        # Update Couple hitlist
+        hitlist_key = "Hitlist|" + str(couple_key.id())
+        hitlist_cache(hitlist_key,couple_key,update=True) 
         self.redirect("/")
 
 class Register(BaseHandler):
@@ -94,9 +99,11 @@ class Confirm(BaseHandler):
 class MainPage(BaseHandler):
     def get(self):
         # self.write(self.user.nickname())
-        # Query all Eatery entities whose ancestor is the user's Couple
-        couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
-        hitlist = Eatery.all().ancestor(couple_key).run()
+        # Get the user's Couple's key
+        couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)        
+        hitlist_key = "Hitlist|" + str(couple_key.id())
+        # Get a list of Entity keys that are associated with this user.
+        hitlist = hitlist_cache(hitlist_key,couple_key)        
         counter = 0
         for e in hitlist:
             counter += 1
@@ -104,6 +111,16 @@ class MainPage(BaseHandler):
         # self.render('index.html')
 
 # Memcache functions.
+def hitlist_cache(key,couple_key,update=False):
+    # Try to get list on Eatery entity keys from memcache
+    hitlist = memcache.get(key)
+    if not hitlist or update:        
+        # Query all Eatery entities whose ancestor is the user's Couple
+        hitlist_query = Eatery.all(keys_only=True).ancestor(couple_key)
+        hitlist = [e for e in hitlist_query.run()]        
+        memcache.set(key,hitlist)
+    return hitlist
+
 def cache_entity(key,entity_key,entity_query_function,update=False):
     obj = memcache.get(key)    
     if not obj or update:        
@@ -165,6 +182,11 @@ def process_csv(blob_info,couple_key):
     				)        
         entry = Eatery(**r)
         entry.put()
+        entry_id = entry.key().id()
+        key = "Eatery|" + str(entry_id)
+        # Add Eatery entry to memcache.
+        cache_entity(key,entry_id,Eatery.by_id,update=True)
+
 
 def int_or_null(data):
     if data != '':
@@ -187,6 +209,11 @@ class Eatery(db.Model):
     P1Rating = db.IntegerProperty()
     P2Rating = db.IntegerProperty()
     AverageRating = db.FloatProperty()
+
+    @classmethod
+    def by_id(cls,eid):
+        e = cls.get_by_id(eid)
+        return e
 
 class Couple(db.Model):
     P1 = db.StringProperty(required = True)
