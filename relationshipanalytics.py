@@ -121,12 +121,12 @@ def hitlist_cache(key,couple_key,update=False):
         memcache.set(key,hitlist)
     return hitlist
 
-def cache_entity(key,entity_key,entity_query_function,update=False):
+def cache_entity(key,query_key,parent_key,entity_query_function,update=False):
     obj = memcache.get(key)    
     if not obj or update:        
         logging.error('User query for' + key)        
         # entity query function must return the actual object!
-        obj = entity_query_function(entity_key)
+        obj = entity_query_function(query_key,parent_key)        
         memcache.set(key,obj)
     return obj
 
@@ -185,7 +185,7 @@ def process_csv(blob_info,couple_key):
         entry_id = entry.key().id()
         key = "Eatery|" + str(entry_id)
         # Add Eatery entry to memcache.
-        cache_entity(key,entry_id,Eatery.by_id,update=True)
+        cache_entity(key,entry_id,couple_key,Eatery.by_id,update=True)
 
 
 def int_or_null(data):
@@ -211,8 +211,8 @@ class Eatery(db.Model):
     AverageRating = db.FloatProperty()
 
     @classmethod
-    def by_id(cls,eid):
-        e = cls.get_by_id(eid)
+    def by_id(cls,eid,couple_key):
+        e = cls.get_by_id(eid,parent=couple_key)
         return e
 
 class Couple(db.Model):
