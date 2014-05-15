@@ -43,6 +43,46 @@
 
     </div><!-- /.container -->
 
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12">
+        <h2 class="sub-header">HitList</h2>
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th></th>             
+                  <th>Restaurant Name</th>
+                  <th>Cuisine Type</th>
+                  <th>City</th>
+                  <th>State</th>
+                  <th>Notes</th>
+                  <th>Completed</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for e in hitlist %}
+                    <tr>                        
+                        <td>                            
+                            <form role="form" method="post">
+                                <button class="btn btn-small btn-primary" type="submit" name="edit" value="{{ e.RestaurantName }}">Edit</button>
+                            </form>
+                        </td>
+                        <td>{{ e.RestaurantName }}</td>
+                        <td>{{ e.CuisineType }}</td>
+                        <td>{{ e.City }}</td>
+                        <td>{{ e.State }}</td>
+                        <td>{{ e.NotesComments }}</td>
+                        <td>{{ e.Completed }}</td>
+                    </tr>
+                {% endfor %}                               
+              </tbody>
+            </table>
+          </div>
+        </div>
+        </div>     
+</div><!-- /.container -->
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

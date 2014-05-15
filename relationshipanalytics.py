@@ -103,12 +103,17 @@ class MainPage(BaseHandler):
         couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)        
         hitlist_key = "Hitlist|" + str(couple_key.id())
         # Get a list of Entity keys that are associated with this user.
-        hitlist = hitlist_cache(hitlist_key,couple_key)        
-        counter = 0
-        for e in hitlist:
-            counter += 1
-        self.write(counter)
-        # self.render('index.html')
+        hitlist_keys = hitlist_cache(hitlist_key,couple_key)
+        hitlist = []
+        for e_key in hitlist_keys:
+            key = 'Eatery|' + str(e_key.id())
+            eatery = cache_entity(key,e_key.id(),couple_key,Eatery.by_id)
+            hitlist.append(eatery)
+        # counter = 0
+        # for e in hitlist:
+        #     counter += 1
+        # self.write(counter)
+        self.render('index.html',hitlist=hitlist)
 
 # Memcache functions.
 def hitlist_cache(key,couple_key,update=False):
@@ -116,8 +121,7 @@ def hitlist_cache(key,couple_key,update=False):
     hitlist = memcache.get(key)
     if not hitlist or update:        
         # Query all Eatery entities whose ancestor is the user's Couple
-        hitlist_query = Eatery.all(keys_only=True).ancestor(couple_key)
-        hitlist = [e for e in hitlist_query.run()]        
+        hitlist_query = Eatery.all(keys_only=True).ancestor(couple_key)        
         memcache.set(key,hitlist)
     return hitlist
 
