@@ -144,7 +144,8 @@ def hitlist_cache(key,couple_key,update=False):
     hitlist = memcache.get(key)
     if not hitlist or update:        
         # Query all Eatery entities whose ancestor is the user's Couple
-        hitlist_query = Eatery.all(keys_only=True).ancestor(couple_key)        
+        hitlist_query = Eatery.all(keys_only=True).ancestor(couple_key)
+        hitlist = list(hitlist_query)
         memcache.set(key,hitlist)
     return hitlist
 
