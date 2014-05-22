@@ -149,8 +149,8 @@ class MainPage(BaseHandler):
             if filters:
                 match = True
                 for f in filters:
-                    if filters[f] and hasattr(eatery,f):
-                        if not re.search(filters[f].upper(),getattr(eatery,f).upper()):
+                    if hasattr(eatery,f):
+                        if filters[f] and not re.search(filters[f].upper(),getattr(eatery,f).upper()):
                             match = False
                             break
                 if match:
