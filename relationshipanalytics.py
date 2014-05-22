@@ -100,20 +100,43 @@ class MainPage(BaseHandler):
     def get(self):
         # self.write(self.user.nickname())
         # Get the user's Couple's key
-        couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)        
+        couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+        if couple_key:
+            hitlist = self.get_hitlist(couple_key)
+            self.render('index.html',hitlist=hitlist)
+        else:
+            # If user is not associated with a couple redirect to registration page.
+            self.redirect('/register')
+
+    def post(self):
+        search_button = self.request.get('search')
+        # Check which button was pressed by the user.
+        if search_button:
+            search_string = self.request.get('search_string').upper()
+            couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+            if couple_key:
+                hitlist = self.get_hitlist(couple_key)
+                # Loop through eateries in hitlist and attempt to match property RestaurantName with search_string
+                result = []
+                for e in hitlist:
+                    if re.search(search_string,e.RestaurantName.upper()):
+                        result.append(e)
+                self.render('index.html',hitlist=result)
+            else:
+                self.redirect('/register')
+
+    def get_hitlist(self,couple_key):
         hitlist_key = "Hitlist|" + str(couple_key.id())
         # Get a list of Entity keys that are associated with this user.
         hitlist_keys = hitlist_cache(hitlist_key,couple_key)
+        # Build a list of Eatery entities to render.
         hitlist = []
         for e_key in hitlist_keys:
             key = 'Eatery|' + str(e_key.id())
             eatery = cache_entity(key,e_key.id(),couple_key,Eatery.by_id)
             hitlist.append(eatery)
-        # counter = 0
-        # for e in hitlist:
-        #     counter += 1
-        # self.write(counter)
-        self.render('index.html',hitlist=hitlist)
+        return hitlist
+
 
 # Memcache functions.
 def hitlist_cache(key,couple_key,update=False):

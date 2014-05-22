@@ -36,10 +36,18 @@
 
     <div class="container">
 
-      <div class="starter-template">
-        <h1>Bootstrap starter template</h1>
-        <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text and a mostly barebones HTML document.</p>
-      </div>
+    <form class="form-signin" role="form" method="post">
+      <div class="row">
+        <div class="col-md-4">
+         <h2 class="form-signin-heading">Search by name</h2>       
+         <input type="text" class="form-control" placeholder="Resturant Name" name="search_string" value="" required autofocus>
+         <h4 id="error">{{error_search}}</h4>   
+         <button class="btn btn-lg btn-primary btn-block" type="submit" name="search" value="Submit">Search</button>
+         <button class="btn btn-lg btn-primary btn-block" type="submit" name="undo_search" value="Undo" onClick="window.location='/'">Clear Search</button>
+         <h4 id="error">{{successMsg}}</h4> 
+        </div>
+        </div>
+    </form>
 
     </div><!-- /.container -->
 
@@ -83,7 +91,7 @@
         </div>     
 </div><!-- /.container -->
 
-
+    <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

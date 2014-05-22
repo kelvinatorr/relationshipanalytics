@@ -1,0 +1,13 @@
+.btn {
+  background-color: black;
+  color: white;
+}
+
+#errorMessage {
+  color:#ff726b;
+}
+
+.btn-link {
+  text-decoration:none;
+  color:yellow;
+}
