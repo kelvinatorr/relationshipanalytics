@@ -99,33 +99,45 @@ class Confirm(BaseHandler):
 class MainPage(BaseHandler):
     def get(self):
         # self.write(self.user.nickname())
-        # Get the user's Couple's key
+        # Get the user's Couple's key        
         couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
         if couple_key:
-            hitlist = self.get_hitlist(couple_key)
+            # get url arguments for filters
+            filter_flag = self.request.get('filter')
+            filters = None
+            if filter_flag.upper() == 'TRUE':
+                restaurant_name = self.request.get('RestaurantName')
+                city = self.request.get('City')
+                state = self.request.get('State')
+                cuisine_type = self.request.get('CuisineType')
+                filters = dict(RestaurantName=restaurant_name
+                                ,City=city
+                                ,State=state
+                                ,CuisineType=cuisine_type)
+            hitlist = self.get_hitlist(couple_key,filters)
             self.render('index.html',hitlist=hitlist)
         else:
             # If user is not associated with a couple redirect to registration page.
             self.redirect('/register')
 
-    def post(self):
-        search_button = self.request.get('search')
-        # Check which button was pressed by the user.
-        if search_button:
-            search_string = self.request.get('search_string').upper()
-            couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
-            if couple_key:
-                hitlist = self.get_hitlist(couple_key)
-                # Loop through eateries in hitlist and attempt to match property RestaurantName with search_string
-                result = []
-                for e in hitlist:
-                    if re.search(search_string,e.RestaurantName.upper()):
-                        result.append(e)
-                self.render('index.html',hitlist=result)
-            else:
-                self.redirect('/register')
+    # def post(self):
+    #     search_button = self.request.get('search')
+    #     # Check which button was pressed by the user.
+    #     if search_button:
+    #         search_string = self.request.get('search_string').upper()
+    #         couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+    #         if couple_key:
+    #             hitlist = self.get_hitlist(couple_key)
+    #             # Loop through eateries in hitlist and attempt to match property RestaurantName with search_string
+    #             result = []
+    #             for e in hitlist:
+    #                 if re.search(search_string,e.RestaurantName.upper()):
+    #                     result.append(e)
+    #             self.render('index.html',hitlist=result)
+    #         else:
+    #             self.redirect('/register')
 
-    def get_hitlist(self,couple_key):
+    def get_hitlist(self,couple_key,filters):        
         hitlist_key = "Hitlist|" + str(couple_key.id())
         # Get a list of Entity keys that are associated with this user.
         hitlist_keys = hitlist_cache(hitlist_key,couple_key)
@@ -134,7 +146,17 @@ class MainPage(BaseHandler):
         for e_key in hitlist_keys:
             key = 'Eatery|' + str(e_key.id())
             eatery = cache_entity(key,e_key.id(),couple_key,Eatery.by_id)
-            hitlist.append(eatery)
+            if filters:
+                match = True
+                for f in filters:
+                    if filters[f] and hasattr(eatery,f):
+                        if not re.search(filters[f].upper(),getattr(eatery,f).upper()):
+                            match = False
+                            break
+                if match:
+                    hitlist.append(eatery)
+            else:
+                hitlist.append(eatery)
         return hitlist
 
 
