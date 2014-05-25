@@ -41,7 +41,20 @@
         <div class="col-md-4">
          <h2 class="form-signin-heading">Search by name</h2>       
          <input type="text" class="form-control" placeholder="Resturant Name" name="search_string" value="" required autofocus>
-         <h4 id="error">{{error_search}}</h4>   
+         <h4 id="error">{{error_search}}</h4>
+         <div class="form-group">            
+            <select class="combobox input-large form-control" name="normal">
+              <option value="" selected="selected">Select a State</option>
+              <option value="AL">Alabama</option>
+              <option value="AK">Alaska</option>
+              <option value="AZ">Arizona</option>
+              <option value="AR">Arkansas</option>
+              <option value="CA">California</option>
+              <option value="CO">Colorado</option>
+              <option value="CT">Connecticut</option>
+              <option value="DE">Delaware</option>              
+            </select>
+          </div>
          <button class="btn btn-lg btn-primary btn-block" type="submit" name="search" value="Submit">Search</button>
          <button class="btn btn-lg btn-primary btn-block" type="submit" name="undo_search" value="Undo" onClick="window.location='/'">Clear Search</button>
          <h4 id="error">{{successMsg}}</h4> 
@@ -92,10 +105,17 @@
 </div><!-- /.container -->
 
     <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/>    
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <script src="/js/bootstrap.min.js"></script>
+    <script src="/js/bootstrap-combobox.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('.combobox').combobox();
+      });
+    </script>
   </body>
 </html>
