@@ -1,0 +1,16 @@
+{% extends "dashboard-base.html" %}
+
+{% block content %}
+
+{% endblock %}
+{% block footer %}
+    <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/>
+    <script src="/js/bootstrap-combobox.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function(){
+        $('.combobox').combobox();    
+        $('#nav_hitlist').addClass('active');;
+      });
+    </script>
+{% endblock %}
