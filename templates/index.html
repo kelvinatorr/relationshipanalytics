@@ -39,20 +39,16 @@
     <form class="form-signin" role="form" method="post">
       <div class="row">
         <div class="col-md-4">
-         <h2 class="form-signin-heading">Search by name</h2>       
+         <h2 class="form-signin-heading">Search</h2>       
          <input type="text" class="form-control" placeholder="Resturant Name" name="search_string" value="" required autofocus>
          <h4 id="error">{{error_search}}</h4>
          <div class="form-group">            
-            <select class="combobox input-large form-control" name="normal">
-              <option value="" selected="selected">Select a State</option>
-              <option value="AL">Alabama</option>
-              <option value="AK">Alaska</option>
-              <option value="AZ">Arizona</option>
-              <option value="AR">Arkansas</option>
-              <option value="CA">California</option>
-              <option value="CO">Colorado</option>
-              <option value="CT">Connecticut</option>
-              <option value="DE">Delaware</option>              
+            <select class="combobox input-large form-control" name="attribute">
+              <option value="" selected="selected">Select an attribute</option>
+              <option value="RestaurantName">Restaurant Name</option>
+              <option value="City">City</option>
+              <option value="State">State</option>
+              <option value="CuisineType">Cuisine Type</option>           
             </select>
           </div>
          <button class="btn btn-lg btn-primary btn-block" type="submit" name="search" value="Submit">Search</button>

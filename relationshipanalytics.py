@@ -120,22 +120,23 @@ class MainPage(BaseHandler):
             # If user is not associated with a couple redirect to registration page.
             self.redirect('/register')
 
-    # def post(self):
-    #     search_button = self.request.get('search')
-    #     # Check which button was pressed by the user.
-    #     if search_button:
-    #         search_string = self.request.get('search_string').upper()
-    #         couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
-    #         if couple_key:
-    #             hitlist = self.get_hitlist(couple_key)
-    #             # Loop through eateries in hitlist and attempt to match property RestaurantName with search_string
-    #             result = []
-    #             for e in hitlist:
-    #                 if re.search(search_string,e.RestaurantName.upper()):
-    #                     result.append(e)
-    #             self.render('index.html',hitlist=result)
-    #         else:
-    #             self.redirect('/register')
+    def post(self):
+        search_button = self.request.get('search')
+        # Check which button was pressed by the user.
+        if search_button:
+            couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+            if couple_key:                
+                search_attribute = self.request.get('attribute')
+                allowed_attributes = set(['RestaurantName','City','State','CuisineType'])
+                # Check that requested attribute is valid.
+                if search_attribute in allowed_attributes:
+                    search_string = self.request.get('search_string').upper()                    
+                    url_search = search_attribute + "=" + search_string
+                    self.redirect('/?filter=TRUE&%s' %url_search)
+                else:
+                    self.render('index.html', error_search='Invalid attribute selected!')
+            else:
+                self.redirect('/register')
 
     def get_hitlist(self,couple_key,filters):        
         hitlist_key = "Hitlist|" + str(couple_key.id())
@@ -148,6 +149,7 @@ class MainPage(BaseHandler):
             eatery = cache_entity(key,e_key.id(),couple_key,Eatery.by_id)
             if filters:
                 match = True
+                # Go through dictionary of filters, if a property of the entity doesn't match a filter do not include in result.
                 for f in filters:
                     if hasattr(eatery,f):
                         if filters[f] and not re.search(filters[f].upper(),getattr(eatery,f).upper()):
