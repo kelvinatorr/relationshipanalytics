@@ -2,15 +2,165 @@
 
 {% block content %}
 
+<div class="container">
+	<div class="row">
+    	<div class="col-md-8">
+			<form class="form-horizontal" role="form">
+			  <h2 class="form-heading">{{eatery.RestaurantName}}</h2>
+			  <div class="form-group">
+			    <label for="name" class="col-sm-2 control-label">Name</label>
+			    <div class="col-sm-5">
+			      <input type="text" class="form-control" id="name" value="{{eatery.RestaurantName}}" required>
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="cuisinetype" class="col-sm-2 control-label">Cuisine</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control" id="cuisinetype" value="{{eatery.CuisineType}}">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="city" class="col-sm-2 control-label">City</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control" id="city" value="{{eatery.City}}">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="state" class="col-sm-2 control-label">State</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control" id="state" value="{{eatery.State}}">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="notes" class="col-sm-2 control-label">Notes</label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" id="notes" value="{{eatery.NotesComments}}">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="completed" class="col-sm-2 control-label">Completed</label>
+			    <div class="col-sm-2">
+				    <select class="input-large form-control" name="attribute">
+				      <option value="{{eatery.Completed}}" selected="selected">{{eatery.Completed}}</option>
+				      {% if eatery.Completed %}
+				      	<option value="FALSE">False</option>
+				      {% else %}
+				      	<option value="TRUE">True</option>
+				      {% endif %}
+				    </select>
+				</div>
+			  </div>
+			  <div class="form-group">
+			    <label for="firsttripdate" class="col-sm-2 control-label">First Trip</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control datepicker" id="firsttripdate" pattern="^\d{1,2}/\d{1,2}/\d{4}"
+			      value="{{ eatery.FirstTripDate.strftime('%m/%d/%Y') if eatery.FirstTripDate != None }}" data-date-format="mm/dd/yyyy">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="lastvisitdate" class="col-sm-2 control-label">Last Visit</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control datepicker" id="lastvisitdate" pattern="^\d{1,2}/\d{1,2}/\d{4}"
+			      value="{{ eatery.LastVisitDate.strftime('%m/%d/%Y') if eatery.LastVisitDate != None }}" data-date-format="mm/dd/yyyy">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="numberoftrips" class="col-sm-2 control-label">Number of Trips</label>
+			    <div class="col-sm-2">
+			      <input type="number" min="0" step="1" pattern="\d+" class="form-control" id="numberoftrips" 
+			      value="{{ eatery.NumberOfTrips }}">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="dayssincelasttrip" class="col-sm-2 control-label">Days Since Last Trip</label>
+			    <div class="col-sm-2">
+			      <input type="number" min="0" step="1" pattern="\d+" class="form-control" id="dayssincelasttrip" 
+			      value="{{ eatery.DaysSinceLastTrip }}">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="P1Rating" class="col-sm-2 control-label">{{couple.P1Nickname}}'s Rating</label>
+			    <div class="col-sm-2">
+			      <input type="number" min="0" max="5" step="0.1" pattern="^\d.\d{1}" class="form-control" id="P1Rating" 
+			      value="{{ eatery.P1Rating }}">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="P2Rating" class="col-sm-2 control-label">{{couple.P1Nickname}}'s Rating</label>
+			    <div class="col-sm-2">
+			      <input type="number" min="0" max="5" step="0.1" pattern="^\d.\d{1}" class="form-control" id="P2Rating" 
+			      value="{{ eatery.P2Rating }}">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <div class="col-sm-offset-2 col-sm-10">
+			      <button type="submit" class="btn btn-default">Submit</button>
+			      <button type="submit" class="btn btn-default" value="Cancel" onClick="window.location='/'">Cancel</button>
+			    </div>
+			  </div>
+			  <p id="changelegend">Boxes highlighted in blue are fields you've edited.</p>
+			</form>
+
+	    </div>
+	  </div>
+</div><!-- /.container -->
 {% endblock %}
 {% block footer %}
     <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/>
-    <script src="/js/bootstrap-combobox.js"></script>
-    <script type="text/javascript">
+    <link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>
+    <!-- <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/> -->
+    <!--<script src="/js/bootstrap-combobox.js"></script> -->
+    <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>    
+    <script>
+      current_values = {"name":"{{eatery.RestaurantName|safe}}"
+        					,"cuisinetype":"{{eatery.CuisineType}}"
+        					,"city":"{{eatery.City}}"
+        					,"state":"{{eatery.State}}"
+        					,"notes":"{{eatery.NotesComments}}"
+        					,"firsttripdate": "{{eatery.FirstTripDate.strftime('%m/%d/%Y') if eatery.FirstTripDate != None}}"
+  	  					};
       $(document).ready(function(){
-        $('.combobox').combobox();    
-        $('#nav_hitlist').addClass('active');;
+        // $('.combobox').combobox();
+        // $('.datepicker').datepicker();
+        $('.datepicker').datepicker()
+        .on('changeDate', function(ev){
+        if ($(this).val() != current_values[$(this).attr('id')]){
+          	$(this).addClass("changed");
+          	// Show changelegend
+          	$('#changelegend').css("visibility","visible");
+          	//alert($(this).val() + "|" + current_values[$(this).attr('id')]);
+          }
+          else {
+          	$(this).removeClass("changed");
+          	//alert('Not the same son!');
+          }
+        });
+        // Activate correct header on navigation panel.
+        $('#nav_hitlist').addClass('active');        
+      });
+      // Indicate changed field.
+      
+      $('input').bind('input', function() {
+          if ($(this).val() != current_values[$(this).attr('id')]){
+          	$(this).addClass("changed");
+          	// Show changelegend
+          	$('#changelegend').css("visibility","visible");
+          	//alert($(this).val() + "|" + current_values[$(this).attr('id')]);
+          }
+          else {
+          	$(this).removeClass("changed");
+          	//alert('Not the same son!');
+          }
+      });
+      $('select').change(function() {
+      	if ($(this).val() != "{{eatery.Completed}}") {
+      		$(this).addClass("changed");
+      		$('#changelegend').css("visibility","visible");
+      	}
+        else {
+        	$(this).removeClass("changed");
+        	$('#changelegend').css("visibility","hidden");
+        }                
       });
     </script>
 {% endblock %}

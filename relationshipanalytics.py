@@ -161,6 +161,34 @@ class MainPage(BaseHandler):
                 hitlist.append(eatery)
         return hitlist
 
+class EditHitlist(BaseHandler):
+    def get(self):
+        couple = Couple.by_user_id(self.user.user_id(),keys_only=False)
+        if couple:
+            eatery_id = self.request.get("id")
+            if eatery_id and eatery_id.isnumeric():
+                eatery_id = int(eatery_id)
+                hitlist_key = "Hitlist|" + str(couple.key().id())
+                # Get a list of Entity keys that are associated with this user.
+                hitlist_keys = hitlist_cache(hitlist_key,couple.key())
+                # Loop through hitlist to make sure that the requested Eatery is in their hitlist.
+                failed = True
+                for e_key in hitlist_keys:            
+                    if e_key.id() == eatery_id:
+                        failed = False
+                if not failed:
+                    # Get cache eatery
+                    key = 'Eatery|' + str(eatery_id)
+                    eatery = cache_entity(key,e_key.id(),couple.key(),Eatery.by_id)
+                    self.render('hitlist-edit.html',eatery=eatery,couple=couple)
+                else:
+                    self.redirect('/')                    
+            else:
+                self.redirect('/')
+        else:
+            # If user is not associated with a couple redirect to registration page.
+            self.redirect('/register')
+
 
 # Memcache functions.
 def hitlist_cache(key,couple_key,update=False):
@@ -176,7 +204,7 @@ def hitlist_cache(key,couple_key,update=False):
 def cache_entity(key,query_key,parent_key,entity_query_function,update=False):
     obj = memcache.get(key)    
     if not obj or update:        
-        logging.error('User query for' + key)        
+        logging.error('User query for' + key)       
         # entity query function must return the actual object!
         obj = entity_query_function(query_key,parent_key)        
         memcache.set(key,obj)
@@ -294,4 +322,5 @@ application = webapp2.WSGIApplication([
    ,('/upload',Upload)   
    ,('/register',Register)
    ,('/confirm',Confirm)
+   ,('/edit',EditHitlist)
 ], debug=True)
