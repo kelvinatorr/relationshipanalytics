@@ -168,26 +168,189 @@ class EditHitlist(BaseHandler):
             eatery_id = self.request.get("id")
             if eatery_id and eatery_id.isnumeric():
                 eatery_id = int(eatery_id)
-                hitlist_key = "Hitlist|" + str(couple.key().id())
-                # Get a list of Entity keys that are associated with this user.
-                hitlist_keys = hitlist_cache(hitlist_key,couple.key())
-                # Loop through hitlist to make sure that the requested Eatery is in their hitlist.
-                failed = True
-                for e_key in hitlist_keys:            
-                    if e_key.id() == eatery_id:
-                        failed = False
-                if not failed:
+                found = self.check_hitlist(couple.key(), eatery_id)
+                if found:
                     # Get cache eatery
                     key = 'Eatery|' + str(eatery_id)
-                    eatery = cache_entity(key,e_key.id(),couple.key(),Eatery.by_id)
+                    eatery = cache_entity(key,eatery_id,couple.key(),Eatery.by_id)
                     self.render('hitlist-edit.html',eatery=eatery,couple=couple)
                 else:
-                    self.redirect('/')                    
+                    self.error(403)                
             else:
-                self.redirect('/')
+                self.redirect("/")
         else:
             # If user is not associated with a couple redirect to registration page.
             self.redirect('/register')
+
+    def post(self):
+        submit = self.request.get('submit')
+        if submit:            
+            eatery_id = self.request.get("id")
+            if eatery_id and eatery_id.isnumeric():
+                couple = Couple.by_user_id(self.user.user_id(),keys_only=True)
+                if couple:
+                    eatery_id = int(eatery_id)
+                    # check if valid eatery id for the couple.
+                    found = self.check_hitlist(couple, eatery_id)
+                    if found:
+                        pass
+                        # verify user inputs
+                        failed = False
+                        error_dict = {}
+                        # Verify that the user entered a restaurant name.
+                        restaurant_name = self.request.get("restaurantName")                        
+                        if not restaurant_name:
+                            failed = True
+                            error_name = "You must enter a name."
+                            error_dict['error_name'] = error_name
+                        
+                        cuisine_type = self.request.get("cuisineType")
+                        city = self.request.get("city")
+                        state = self.request.get("state")
+                        notes_comments = self.request.get("notesComments")
+                        completed = self.request.get("completed").upper()
+                        if completed == "TRUE":
+                            completed = True
+                        else:
+                            completed = False
+
+                        first_trip_date = self.request.get("firstTripDate")
+                        # Check if a value was entered first.
+                        if first_trip_date:
+                            first_trip_date = convert_string_to_date(first_trip_date)
+                            if not first_trip_date:
+                                failed = True
+                                error_first_trip = "Invalid date format."
+                                error_dict['error_first_trip'] = error_first_trip
+                        else:
+                            first_trip_date = None
+
+                        last_visit_date = self.request.get("lastVisitDate")
+                        # Check if a value was entered first.
+                        if last_visit_date:
+                            last_visit_date = convert_string_to_date(last_visit_date)
+                            if not last_visit_date:
+                                failed = True
+                                error_last_visit = "Invalid date format."
+                                error_dict['error_last_visit'] = error_last_visit
+                        else:
+                            last_visit_date = None
+
+                        number_of_trips = self.request.get("numberOfTrips")
+                        if number_of_trips and not number_of_trips.isnumeric():
+                            failed = True
+                            error_number_of_trips = "Invalid number entered."
+                            error_dict['error_number_of_trips'] = error_number_of_trips
+                        else:
+                            number_of_trips = int(number_of_trips)
+
+                        p1_Rating = self.request.get("p1Rating")
+                        if p1_Rating:
+                            check  = self.check_rating(1,p1_Rating)
+                            if check[0]:
+                                p1_Rating = int(p1_Rating)
+                            else:
+                                error_dict[check[1]] = check[2]
+                        else:
+                            p1_Rating = None
+
+                        p2_Rating = self.request.get("p2Rating")
+                        if p2_Rating:
+                            check = self.check_rating(2,p2_Rating)
+                            if check[0]:
+                                p2_Rating = int(p2_Rating)
+                            else:
+                                error_dict[check[1]] = check[2]
+                        else:
+                            p2_Rating = None
+                        # Get eatery entity.
+                        key = 'Eatery|' + str(eatery_id)
+                        eatery = cache_entity(key,eatery_id,couple,Eatery.by_id)
+                        if failed:                           
+                            # add eatery to render dictionary
+                            error_dict['eatery'] = eatery
+                            # get couple object
+                            couple = Couple.by_user_id(self.user.user_id(),keys_only=False)
+                            # add couple to render dictionary
+                            error_dict['couple'] = couple
+                            self.render('hitlist-edit.html',**error_dict)
+                        else:
+                            days_last_trip = 0
+                            # Calculate average rating.
+                            if p1_Rating and p2_Rating:
+                                average_rating = (p1_Rating + p2_Rating) / 2.0
+                            elif p1_Rating:
+                                average_rating = float(p1_Rating)
+                            elif p2_Rating:
+                                average_rating = float(p2_Rating)
+                            else:
+                                average_rating = None
+                            
+                            # change eatery entry to reflect changes.
+                            eatery.RestaurantName = restaurant_name
+                            eatery.CuisineType = cuisine_type
+                            eatery.City = city
+                            eatery.State = state
+                            eatery.NotesComments = notes_comments
+                            eatery.Completed = completed
+                            eatery.FirstTripDate = first_trip_date
+                            eatery.LastVisitDate = last_visit_date
+                            eatery.NumberOfTrips = number_of_trips
+                            eatery.P1Rating = p1_Rating
+                            eatery.P2Rating = p2_Rating
+                            eatery.AverageRating = average_rating
+
+                            # Save new Eatery to DB
+                            eatery.put()
+                            # refresh memcache
+                            eatery = cache_entity(key,eatery_id,couple,Eatery.by_id,update=True)
+                            # Redirect to hitlist.
+                            self.redirect("/")
+                    else:
+                        self.error(403)
+                else:
+                    self.redirect("/register")
+            else:
+                self.redirect("/")
+
+    def check_rating(self,person,rating):
+        """
+        Checks if the user entered rating is a number from 0 to 5.
+        Returns the key for the error dictionary and error message if False.
+        """
+        valid = True
+        if rating.isnumeric():
+            rating = int(rating)
+            print rating
+            if rating > 5 or rating < 0:
+                valid = False
+                error_key = 'error_p%s_rating' % person
+                error_message = "Please enter a number between 0 and 5"
+        else:
+            valid = False
+            error_key = 'error_p%s_rating' % person
+            error_message = "Please enter a valid number between 0 and 5"
+        if valid:
+            return valid,None,None
+        else:
+            return valid,error_key,error_message
+
+    def check_hitlist(self,couple_key,eatery_id):
+        """ Checks that a given eatery id is in the couple's hitlist"""
+        hitlist_key = "Hitlist|" + str(couple_key.id())
+        # Get a list of Entity keys that are associated with this user.
+        hitlist_keys = hitlist_cache(hitlist_key,couple_key)
+        # Loop through hitlist to make sure that the requested Eatery is in their hitlist.
+        found = False
+        for e_key in hitlist_keys:            
+            if e_key.id() == eatery_id:
+                found = True
+                break
+        return found
+
+class Test(BaseHandler):
+    def get(self):
+        self.render("test.html")
 
 
 # Memcache functions.
@@ -295,6 +458,10 @@ class Eatery(db.Model):
         e = cls.get_by_id(eid,parent=couple_key)
         return e
 
+    def calc_days_since_last_trip(self):
+        date_offset = datetime.date.today() - self.LastVisitDate
+        return date_offset.days
+
 class Couple(db.Model):
     P1 = db.StringProperty(required = True)
     P1Email = db.StringProperty()
@@ -323,4 +490,5 @@ application = webapp2.WSGIApplication([
    ,('/register',Register)
    ,('/confirm',Confirm)
    ,('/edit',EditHitlist)
+   ,('/test',Test)
 ], debug=True)

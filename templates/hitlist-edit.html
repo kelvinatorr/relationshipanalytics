@@ -5,42 +5,43 @@
 <div class="container">
 	<div class="row">
     	<div class="col-md-8">
-			<form class="form-horizontal" role="form">
+			<form class="form-horizontal" role="form" method="post">
 			  <h2 class="form-heading">{{eatery.RestaurantName}}</h2>
 			  <div class="form-group">
 			    <label for="name" class="col-sm-2 control-label">Name</label>
 			    <div class="col-sm-5">
-			      <input type="text" class="form-control" id="name" value="{{eatery.RestaurantName}}" required>
+			      <input type="text" class="form-control" id="name" value="{{eatery.RestaurantName}}" name="restaurantName" required>	      
 			    </div>
+			    <p class="errorMessage">{{error_name}}</p>
 			  </div>
 			  <div class="form-group">
 			    <label for="cuisinetype" class="col-sm-2 control-label">Cuisine</label>
 			    <div class="col-sm-4">
-			      <input type="text" class="form-control" id="cuisinetype" value="{{eatery.CuisineType}}">
+			      <input type="text" class="form-control" id="cuisinetype" value="{{eatery.CuisineType}}" name="cuisineType">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="city" class="col-sm-2 control-label">City</label>
 			    <div class="col-sm-4">
-			      <input type="text" class="form-control" id="city" value="{{eatery.City}}">
+			      <input type="text" class="form-control" id="city" value="{{eatery.City}}" name="city">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="state" class="col-sm-2 control-label">State</label>
 			    <div class="col-sm-4">
-			      <input type="text" class="form-control" id="state" value="{{eatery.State}}">
+			      <input type="text" class="form-control" id="state" value="{{eatery.State}}" name="state">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="notes" class="col-sm-2 control-label">Notes</label>
 			    <div class="col-sm-10">
-			      <input type="text" class="form-control" id="notes" value="{{eatery.NotesComments}}">
+			      <input type="text" class="form-control" id="notes" value="{{eatery.NotesComments}}" name="notesComments">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="completed" class="col-sm-2 control-label">Completed</label>
 			    <div class="col-sm-2">
-				    <select class="input-large form-control" name="attribute">
+				    <select class="input-large form-control" name="completed">
 				      <option value="{{eatery.Completed}}" selected="selected">{{eatery.Completed}}</option>
 				      {% if eatery.Completed %}
 				      	<option value="FALSE">False</option>
@@ -54,49 +55,48 @@
 			    <label for="firsttripdate" class="col-sm-2 control-label">First Trip</label>
 			    <div class="col-sm-4">
 			      <input type="text" class="form-control datepicker" id="firsttripdate" pattern="^\d{1,2}/\d{1,2}/\d{4}"
-			      value="{{ eatery.FirstTripDate.strftime('%m/%d/%Y') if eatery.FirstTripDate != None }}" data-date-format="mm/dd/yyyy">
+			      value="{{ eatery.FirstTripDate.strftime('%m/%d/%Y') if eatery.FirstTripDate != None }}" data-date-format="mm/dd/yyyy" name="firstTripDate">
 			    </div>
+			    <p class="errorMessage">{{error_first_trip}}</p>
 			  </div>
 			  <div class="form-group">
 			    <label for="lastvisitdate" class="col-sm-2 control-label">Last Visit</label>
 			    <div class="col-sm-4">
 			      <input type="text" class="form-control datepicker" id="lastvisitdate" pattern="^\d{1,2}/\d{1,2}/\d{4}"
-			      value="{{ eatery.LastVisitDate.strftime('%m/%d/%Y') if eatery.LastVisitDate != None }}" data-date-format="mm/dd/yyyy">
+			      value="{{ eatery.LastVisitDate.strftime('%m/%d/%Y') if eatery.LastVisitDate != None }}" data-date-format="mm/dd/yyyy" name="lastVisitDate">
 			    </div>
+			    <p class="errorMessage">{{error_last_visit}}</p>
 			  </div>
 			  <div class="form-group">
 			    <label for="numberoftrips" class="col-sm-2 control-label">Number of Trips</label>
 			    <div class="col-sm-2">
 			      <input type="number" min="0" step="1" pattern="\d+" class="form-control" id="numberoftrips" 
-			      value="{{ eatery.NumberOfTrips }}">
+			      value="{{ eatery.NumberOfTrips }}" name="numberOfTrips">
 			    </div>
-			  </div>
-			  <div class="form-group">
-			    <label for="dayssincelasttrip" class="col-sm-2 control-label">Days Since Last Trip</label>
-			    <div class="col-sm-2">
-			      <input type="number" min="0" step="1" pattern="\d+" class="form-control" id="dayssincelasttrip" 
-			      value="{{ eatery.DaysSinceLastTrip }}">
-			    </div>
+			    <p class="errorMessage">{{error_number_of_trips}}</p>
 			  </div>
 			  <div class="form-group">
 			    <label for="P1Rating" class="col-sm-2 control-label">{{couple.P1Nickname}}'s Rating</label>
 			    <div class="col-sm-2">
-			      <input type="number" min="0" max="5" step="0.1" pattern="^\d.\d{1}" class="form-control" id="P1Rating" 
-			      value="{{ eatery.P1Rating }}">
+			      <input type="number" min="0" max="5" step="1" pattern="^\d" class="form-control" id="P1Rating" 
+			      value="{{ eatery.P1Rating }}" name="p1Rating">
 			    </div>
+			    <p class="errorMessage">{{error_p1_rating}}</p>
 			  </div>
 			  <div class="form-group">
 			    <label for="P2Rating" class="col-sm-2 control-label">{{couple.P1Nickname}}'s Rating</label>
 			    <div class="col-sm-2">
-			      <input type="number" min="0" max="5" step="0.1" pattern="^\d.\d{1}" class="form-control" id="P2Rating" 
-			      value="{{ eatery.P2Rating }}">
+			      <input type="number" min="0" max="5" step="1" pattern="^\d" class="form-control" id="P2Rating" 
+			      value="{{ eatery.P2Rating }}" name="p2Rating">
 			    </div>
+			    <p class="errorMessage">{{error_p2_rating}}</p>
 			  </div>
+			  <input type="hidden" value="{{eatery.key().id()}}" name="id">
 			  <div class="form-group">
 			    <div class="col-sm-offset-2 col-sm-10">
-			      <button type="submit" class="btn btn-default">Submit</button>
-			      <button type="submit" class="btn btn-default" value="Cancel" onClick="window.location='/'">Cancel</button>
-			    </div>
+			      <button type="submit" class="btn btn-default" name="submit" value="Submit">Submit</button>
+			      <button type="button" class="btn btn-default" name="cancel" value="Cancel" onClick="window.location='/'">Cancel</button>
+			    </div>			    
 			  </div>
 			  <p id="changelegend">Boxes highlighted in blue are fields you've edited.</p>
 			</form>
@@ -106,22 +106,25 @@
 </div><!-- /.container -->
 {% endblock %}
 {% block footer %}
-    <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
     <link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>
     <!-- <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/> -->
     <!--<script src="/js/bootstrap-combobox.js"></script> -->
     <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>    
     <script>
-      current_values = {"name":"{{eatery.RestaurantName|safe}}"
+      var current_values = {"name":"{{eatery.RestaurantName|safe}}"
         					,"cuisinetype":"{{eatery.CuisineType}}"
         					,"city":"{{eatery.City}}"
         					,"state":"{{eatery.State}}"
         					,"notes":"{{eatery.NotesComments}}"
         					,"firsttripdate": "{{eatery.FirstTripDate.strftime('%m/%d/%Y') if eatery.FirstTripDate != None}}"
+        					,"lastvisitdate": "{{eatery.LastVisitDate.strftime('%m/%d/%Y') if eatery.LastVisitDate != None}} "
+        					,"numberoftrips": "{{ eatery.NumberOfTrips }}"
+        					,"P1Rating": "{{ eatery.P1Rating }}"
+        					,"P2Rating": "{{ eatery.P2Rating }}"
   	  					};
       $(document).ready(function(){
-        // $('.combobox').combobox();
-        // $('.datepicker').datepicker();
+        // $('.combobox').combobox();        
         $('.datepicker').datepicker()
         .on('changeDate', function(ev){
         if ($(this).val() != current_values[$(this).attr('id')]){
