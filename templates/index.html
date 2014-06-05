@@ -2,29 +2,25 @@
 
 {% block content %}
     <div class="container">
-
-    <form class="form-signin" role="form" method="post">
-      <div class="row">
-        <div class="col-md-4">
-         <h2 class="form-signin-heading">Search</h2>       
-         <input type="text" class="form-control" placeholder="Search String" name="search_string" value="" required autofocus>
-         <h4 id="error">{{error_search}}</h4>
-         <div class="form-group">            
-            <select class="combobox input-large form-control" name="attribute">
-              <option value="" selected="selected">Select an attribute</option>
-              <option value="RestaurantName">Restaurant Name</option>
-              <option value="City">City</option>
-              <option value="State">State</option>
-              <option value="CuisineType">Cuisine Type</option>           
-            </select>
-          </div>
-         <button class="btn btn-lg btn-primary btn-block" type="submit" name="search" value="Submit">Search</button>
-         <button class="btn btn-lg btn-primary btn-block" type="submit" name="undo_search" value="Undo" onClick="window.location='/'">Clear Search</button>
-         <h4 id="error">{{successMsg}}</h4> 
+      <h2>Search</h2>
+      <form class="form-inline" role="form" method="post">        
+        <div class="form-group">
+          <label class="sr-only" for="searchString">Search String</label>
+          <input type="text" class="form-control" placeholder="Search String" name="search_string" value="" id="searchString" required autofocus>
         </div>
+        <div class="form-group">
+          <label class="sr-only" for="searchAttribute">Search Attribute</label>
+          <select class="combobox input-large form-control" name="attribute" id="searchAttribute">
+            <option value="" selected="selected">Select an attribute</option>
+            <option value="RestaurantName">Restaurant Name</option>
+            <option value="City">City</option>
+            <option value="State">State</option>
+            <option value="CuisineType">Cuisine Type</option>           
+          </select>
         </div>
-    </form>
-
+        <button class="btn btn-small btn-primary" type="submit" name="search" value="Submit">Search</button>
+        <button class="btn btn-small btn-primar" type="button" name="undo_search" value="Undo" onClick="window.location='/'">Clear Search</button>
+      </form>
     </div><!-- /.container -->
 
     <div class="container">
