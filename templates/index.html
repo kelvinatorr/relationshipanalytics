@@ -7,7 +7,7 @@
       <div class="row">
         <div class="col-md-4">
          <h2 class="form-signin-heading">Search</h2>       
-         <input type="text" class="form-control" placeholder="Resturant Name" name="search_string" value="" required autofocus>
+         <input type="text" class="form-control" placeholder="Search String" name="search_string" value="" required autofocus>
          <h4 id="error">{{error_search}}</h4>
          <div class="form-group">            
             <select class="combobox input-large form-control" name="attribute">
@@ -41,23 +41,23 @@
                   <th>City</th>
                   <th>State</th>
                   <th>Notes</th>
-                  <th>Completed</th>
+                  <th>Completed</th>                  
                 </tr>
               </thead>
               <tbody>
                 {% for e in hitlist %}
                     <tr>                        
                         <td>                            
-                            <form role="form" method="post">
+                            <a href="/edit?id={{e.key().id()}}">
                                 <button class="btn btn-small btn-primary" type="submit" name="edit" value="{{ e.RestaurantName }}">Edit</button>
-                            </form>
+                            </a>
                         </td>
                         <td>{{ e.RestaurantName }}</td>
                         <td>{{ e.CuisineType }}</td>
                         <td>{{ e.City }}</td>
                         <td>{{ e.State }}</td>
                         <td>{{ e.NotesComments }}</td>
-                        <td>{{ e.Completed }}</td>
+                        <td>{{ e.Completed }}</td>                        
                     </tr>
                 {% endfor %}                               
               </tbody>
