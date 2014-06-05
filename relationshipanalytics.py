@@ -166,16 +166,22 @@ class EditHitlist(BaseHandler):
         couple = Couple.by_user_id(self.user.user_id(),keys_only=False)
         if couple:
             eatery_id = self.request.get("id")
-            if eatery_id and eatery_id.isnumeric():
-                eatery_id = int(eatery_id)
-                found = self.check_hitlist(couple.key(), eatery_id)
-                if found:
-                    # Get cache eatery
-                    key = 'Eatery|' + str(eatery_id)
-                    eatery = cache_entity(key,eatery_id,couple.key(),Eatery.by_id)
-                    self.render('hitlist-edit.html',eatery=eatery,couple=couple)
+            if eatery_id:
+                if eatery_id.isnumeric():
+                    eatery_id = int(eatery_id)
+                    found = self.check_hitlist(couple.key(), eatery_id)
+                    if found:
+                        # Get cache eatery
+                        key = 'Eatery|' + str(eatery_id)
+                        eatery = cache_entity(key,eatery_id,couple.key(),Eatery.by_id)
+                        self.render('hitlist-edit.html',eatery=eatery,couple=couple)
+                    else:
+                        self.error(403)
+                elif eatery_id.upper() == "NEW":
+                    # Render html template for creating a new eatery.
+                    self.render('hitlist-create.html',couple=couple)
                 else:
-                    self.error(403)                
+                    self.redirect("/")
             else:
                 self.redirect("/")
         else:
@@ -184,16 +190,26 @@ class EditHitlist(BaseHandler):
 
     def post(self):
         submit = self.request.get('submit')
-        if submit:            
-            eatery_id = self.request.get("id")
-            if eatery_id and eatery_id.isnumeric():
-                couple = Couple.by_user_id(self.user.user_id(),keys_only=True)
-                if couple:
-                    eatery_id = int(eatery_id)
-                    # check if valid eatery id for the couple.
-                    found = self.check_hitlist(couple, eatery_id)
-                    if found:
-                        pass
+        if submit:
+            couple = Couple.by_user_id(self.user.user_id(),keys_only=True)
+            if couple:
+                eatery_id = self.request.get("id")
+                if eatery_id: 
+                    if eatery_id.isnumeric():                               
+                        eatery_id = int(eatery_id)
+                        # check if valid eatery id for the couple.
+                        edit_found = self.check_hitlist(couple, eatery_id)
+                        new = False
+                    elif eatery_id.upper() == "NEW":
+                        # User is posting data for new Eatery
+                        edit_found = False
+                        new = True
+                    else:
+                        # Fail the post attempt and 403 it.
+                        edit_found = False
+                        new = False
+
+                    if edit_found or new:                        
                         # verify user inputs
                         failed = False
                         error_dict = {}
@@ -264,17 +280,27 @@ class EditHitlist(BaseHandler):
                         else:
                             p2_Rating = None
                         # Get eatery entity.
-                        key = 'Eatery|' + str(eatery_id)
-                        eatery = cache_entity(key,eatery_id,couple,Eatery.by_id)
-                        if failed:                           
-                            # add eatery to render dictionary
-                            error_dict['eatery'] = eatery
+                        if edit_found:
+                            # handler for edits.
+                            key = 'Eatery|' + str(eatery_id)
+                            eatery = cache_entity(key,eatery_id,couple,Eatery.by_id)
+
+                        if failed:
+                            if edit_found:
+                                # add eatery to render dictionary
+                                error_dict['eatery'] = eatery
                             # get couple object
                             couple = Couple.by_user_id(self.user.user_id(),keys_only=False)
                             # add couple to render dictionary
                             error_dict['couple'] = couple
-                            self.render('hitlist-edit.html',**error_dict)
+                            if edit_found:
+                                # render edit template for edits.
+                                self.render('hitlist-edit.html',**error_dict)
+                            else:
+                                # Render create template for creates.
+                                self.render('hitlist-create.html',**error_dict)
                         else:
+                            # User inputs validated prepare to commit to
                             days_last_trip = 0
                             # Calculate average rating.
                             if p1_Rating and p2_Rating:
@@ -287,7 +313,12 @@ class EditHitlist(BaseHandler):
                                 average_rating = None
                             
                             # change eatery entry to reflect changes.
-                            eatery.RestaurantName = restaurant_name
+                            if edit_found:
+                                eatery.RestaurantName = restaurant_name
+                            else:
+                                # Or create new entity.
+                                eatery = Eatery(RestaurantName=restaurant_name,parent=couple)
+
                             eatery.CuisineType = cuisine_type
                             eatery.City = city
                             eatery.State = state
@@ -302,6 +333,11 @@ class EditHitlist(BaseHandler):
 
                             # Save new Eatery to DB
                             eatery.put()
+                            if new:
+                                eatery_id = eatery.key().id()
+                                key = 'Eatery|' + str(eatery_id)
+                                hitlist_key = "Hitlist|" + str(couple.id())
+                                hitlist_cache(hitlist_key,couple,update=True)
                             # refresh memcache
                             eatery = cache_entity(key,eatery_id,couple,Eatery.by_id,update=True)
                             # Redirect to hitlist.
@@ -309,9 +345,9 @@ class EditHitlist(BaseHandler):
                     else:
                         self.error(403)
                 else:
-                    self.redirect("/register")
+                    self.redirect("/")
             else:
-                self.redirect("/")
+                self.redirect("/register")
 
     def check_rating(self,person,rating):
         """

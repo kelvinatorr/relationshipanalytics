@@ -26,3 +26,7 @@ input:focus:invalid {
 	color:#58ACFA;
 	visibility:hidden;
 }
+
+#requirelegend {
+	color:#ff726b;	
+}

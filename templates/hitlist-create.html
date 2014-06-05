@@ -1,0 +1,120 @@
+{% extends "dashboard-base.html" %}
+
+{% block content %}
+
+<div class="container">
+	<div class="row">
+    	<div class="col-md-8">
+			<form class="form-horizontal" role="form" method="post">
+			  <h2 class="form-heading">Add New Eatery</h2>
+			  <div class="form-group">
+			    <label for="name" class="col-sm-2 control-label">Name</label>
+			    <div class="col-sm-5">
+			      <input type="text" class="form-control" id="name" value="" name="restaurantName" required>	      
+			    </div>
+			    <p class="errorMessage">{{error_name}}</p>
+			  </div>
+			  <div class="form-group">
+			    <label for="cuisinetype" class="col-sm-2 control-label">Cuisine</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control" id="cuisinetype" value="" name="cuisineType">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="city" class="col-sm-2 control-label">City</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control" id="city" value="" name="city">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="state" class="col-sm-2 control-label">State</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control" id="state" value="" name="state">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="notes" class="col-sm-2 control-label">Notes</label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" id="notes" value="" name="notesComments">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="completed" class="col-sm-2 control-label">Completed</label>
+			    <div class="col-sm-2">
+				    <select class="input-large form-control" name="completed">
+				      <option value="FALSE" selected="selected">False</option>				      
+				      <option value="TRUE">True</option>				      
+				    </select>
+				</div>
+			  </div>
+			  <div class="form-group">
+			    <label for="firsttripdate" class="col-sm-2 control-label">First Trip</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control datepicker" id="firsttripdate" pattern="^\d{1,2}/\d{1,2}/\d{4}"
+			      value="" data-date-format="mm/dd/yyyy" name="firstTripDate">
+			    </div>
+			    <p class="errorMessage">{{error_first_trip}}</p>
+			  </div>
+			  <div class="form-group">
+			    <label for="lastvisitdate" class="col-sm-2 control-label">Last Visit</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control datepicker" id="lastvisitdate" pattern="^\d{1,2}/\d{1,2}/\d{4}"
+			      value="" data-date-format="mm/dd/yyyy" name="lastVisitDate">
+			    </div>
+			    <p class="errorMessage">{{error_last_visit}}</p>
+			  </div>
+			  <div class="form-group">
+			    <label for="numberoftrips" class="col-sm-2 control-label">Number of Trips</label>
+			    <div class="col-sm-2">
+			      <input type="number" min="0" step="1" pattern="\d+" class="form-control" id="numberoftrips" 
+			      value="0" name="numberOfTrips">
+			    </div>
+			    <p class="errorMessage">{{error_number_of_trips}}</p>
+			  </div>
+			  <div class="form-group">
+			    <label for="P1Rating" class="col-sm-2 control-label">{{couple.P1Nickname}}'s Rating</label>
+			    <div class="col-sm-2">
+			      <input type="number" min="0" max="5" step="1" pattern="^\d" class="form-control" id="P1Rating" 
+			      value="" name="p1Rating">
+			    </div>
+			    <p class="errorMessage">{{error_p1_rating}}</p>
+			  </div>
+			  <div class="form-group">
+			    <label for="P2Rating" class="col-sm-2 control-label">{{couple.P1Nickname}}'s Rating</label>
+			    <div class="col-sm-2">
+			      <input type="number" min="0" max="5" step="1" pattern="^\d" class="form-control" id="P2Rating" 
+			      value="" name="p2Rating">
+			    </div>
+			    <p class="errorMessage">{{error_p2_rating}}</p>
+			  </div>
+			  <input type="hidden" value="new" name="id">
+			  <div class="form-group">
+			    <div class="col-sm-offset-2 col-sm-10">
+			      <button type="submit" class="btn btn-default" name="submit" value="Submit">Submit</button>
+			      <button type="button" class="btn btn-default" name="cancel" value="Cancel" onClick="window.location='/'">Cancel</button>
+			    </div>			    
+			  </div>
+			  <p id="requirelegend">Any box highlighted in red is required.</p>
+			</form>
+
+	    </div>
+	  </div>
+</div><!-- /.container -->
+{% endblock %}
+{% block footer %}
+    <link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
+    <link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>
+    <!-- <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/> -->
+    <!--<script src="/js/bootstrap-combobox.js"></script> -->
+    <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>    
+    <script>
+      
+      $(document).ready(function(){
+        // $('.combobox').combobox();        
+        $('.datepicker').datepicker();
+        // Activate correct header on navigation panel.
+        $('#nav_hitlist').addClass('active');        
+      });      
+     
+    </script>
+{% endblock %}
