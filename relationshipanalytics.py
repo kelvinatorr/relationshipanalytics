@@ -53,7 +53,8 @@ class Upload(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
         upload_files = self.get_uploads('file')  # 'file' is file upload field in the form
         blob_info = upload_files[0]
         # Get the current user's Couple entity to set it as a ancestor for each entry in the csv.Dialect
-        couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+        key = "Couple_Key|" + self.user.user_id()
+        couple_key = cache_entity(key,self.user.user_id(),None,Couple.by_user_id,keys_only=True)
         process_csv(blob_info,couple_key)
         # Delete file after import
         blobstore.delete(blob_info.key())
@@ -98,9 +99,10 @@ class Confirm(BaseHandler):
 
 class MainPage(BaseHandler):
     def get(self):
-        # self.write(self.user.nickname())
-        # Get the user's Couple's key        
-        couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+        key = "Couple_Key|" + self.user.user_id()
+        couple_key = cache_entity(key,self.user.user_id(),None,Couple.by_user_id,keys_only=True)
+        # Get the user's Couple's key       
+        # couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
         if couple_key:
             # get url arguments for filters
             filter_flag = self.request.get('filter')
@@ -124,7 +126,8 @@ class MainPage(BaseHandler):
         search_button = self.request.get('search')
         # Check which button was pressed by the user.
         if search_button:
-            couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
+            key = "Couple_Key|" + self.user.user_id()
+            couple_key = cache_entity(key,self.user.user_id(),None,Couple.by_user_id,keys_only=True)
             if couple_key:                
                 search_attribute = self.request.get('attribute')
                 allowed_attributes = set(['RestaurantName','City','State','CuisineType'])
@@ -163,7 +166,8 @@ class MainPage(BaseHandler):
 
 class EditHitlist(BaseHandler):
     def get(self):
-        couple = Couple.by_user_id(self.user.user_id(),keys_only=False)
+        key = "Couple|" + self.user.user_id()
+        couple = cache_entity(key,self.user.user_id(),None,Couple.by_user_id,keys_only=False)
         if couple:
             eatery_id = self.request.get("id")
             if eatery_id:
@@ -191,14 +195,15 @@ class EditHitlist(BaseHandler):
     def post(self):
         submit = self.request.get('submit')
         if submit:
-            couple = Couple.by_user_id(self.user.user_id(),keys_only=True)
-            if couple:
+            couple_memcache_key = "Couple_Key|" + self.user.user_id()
+            couple_key = cache_entity(couple_memcache_key,self.user.user_id(),None,Couple.by_user_id,keys_only=True)
+            if couple_key:
                 eatery_id = self.request.get("id")
                 if eatery_id: 
                     if eatery_id.isnumeric():                               
                         eatery_id = int(eatery_id)
-                        # check if valid eatery id for the couple.
-                        edit_found = self.check_hitlist(couple, eatery_id)
+                        # check if valid eatery id for the couple_key.
+                        edit_found = self.check_hitlist(couple_key, eatery_id)
                         new = False
                     elif eatery_id.upper() == "NEW":
                         # User is posting data for new Eatery
@@ -283,14 +288,15 @@ class EditHitlist(BaseHandler):
                         if edit_found:
                             # handler for edits.
                             key = 'Eatery|' + str(eatery_id)
-                            eatery = cache_entity(key,eatery_id,couple,Eatery.by_id)
+                            eatery = cache_entity(key,eatery_id,couple_key,Eatery.by_id)
 
                         if failed:
                             if edit_found:
                                 # add eatery to render dictionary
                                 error_dict['eatery'] = eatery
                             # get couple object
-                            couple = Couple.by_user_id(self.user.user_id(),keys_only=False)
+                            couple_memcache_key = "Couple|" + self.user.user_id()
+                            couple = cache_entity(couple_memcache_key,self.user.user_id(),None,Couple.by_user_id,keys_only=False)
                             # add couple to render dictionary
                             error_dict['couple'] = couple
                             if edit_found:
@@ -317,7 +323,7 @@ class EditHitlist(BaseHandler):
                                 eatery.RestaurantName = restaurant_name
                             else:
                                 # Or create new entity.
-                                eatery = Eatery(RestaurantName=restaurant_name,parent=couple)
+                                eatery = Eatery(RestaurantName=restaurant_name,parent=couple_key)
 
                             eatery.CuisineType = cuisine_type
                             eatery.City = city
@@ -336,10 +342,10 @@ class EditHitlist(BaseHandler):
                             if new:
                                 eatery_id = eatery.key().id()
                                 key = 'Eatery|' + str(eatery_id)
-                                hitlist_key = "Hitlist|" + str(couple.id())
-                                hitlist_cache(hitlist_key,couple,update=True)
+                                hitlist_key = "Hitlist|" + str(couple_key.id())
+                                hitlist_cache(hitlist_key,couple_key,update=True)
                             # refresh memcache
-                            eatery = cache_entity(key,eatery_id,couple,Eatery.by_id,update=True)
+                            eatery = cache_entity(key,eatery_id,couple_key,Eatery.by_id,update=True)
                             # Redirect to hitlist.
                             self.redirect("/")
                     else:
@@ -400,12 +406,12 @@ def hitlist_cache(key,couple_key,update=False):
         memcache.set(key,hitlist)
     return hitlist
 
-def cache_entity(key,query_key,parent_key,entity_query_function,update=False):
+def cache_entity(key,query_key,parent_key,entity_query_function,keys_only=False,update=False):
     obj = memcache.get(key)    
     if not obj or update:        
         logging.error('User query for' + key)       
         # entity query function must return the actual object!
-        obj = entity_query_function(query_key,parent_key)        
+        obj = entity_query_function(query_key,parent_key,keys_only)        
         memcache.set(key,obj)
     return obj
 
@@ -490,7 +496,7 @@ class Eatery(db.Model):
     AverageRating = db.FloatProperty()
 
     @classmethod
-    def by_id(cls,eid,couple_key):
+    def by_id(cls,eid,couple_key,keys_only):
         e = cls.get_by_id(eid,parent=couple_key)
         return e
 
@@ -512,7 +518,7 @@ class Couple(db.Model):
         return sub
 
     @classmethod
-    def by_user_id(cls,user_id,keys_only=False):
+    def by_user_id(cls,user_id,parent_key=None,keys_only=False):
         couple = cls.all(keys_only=keys_only).filter('P1 =', user_id).get()
         if not couple:
             couple = cls.all(keys_only=keys_only).filter('P2 =', user_id).get()
