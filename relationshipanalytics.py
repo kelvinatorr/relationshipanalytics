@@ -225,8 +225,7 @@ class EditHitlist(BaseHandler):
                             error_name = "You must enter a name."
                             error_dict['error_name'] = error_name
                         
-                        cuisine_type = self.request.get("cuisineType")
-                        street_address = self.request.get("streetAddress")
+                        cuisine_type = self.request.get("cuisineType")                        
                         city = self.request.get("city")
                         state = self.request.get("state")
                         notes_comments = self.request.get("notesComments")
@@ -285,6 +284,18 @@ class EditHitlist(BaseHandler):
                                 error_dict[check[1]] = check[2]
                         else:
                             p2_Rating = None
+                        # Get additional fields.
+                        street_address = self.request.get("streetAddress")
+                        # Verify that the zip code is a number.
+                        zip_code = self.request.get("zipCode")
+                        if zip_code:
+                            if zip_code.isnumeric():
+                                zip_code = int(zip_code)
+                            else:                                
+                                failed = True
+                                error_zip_code = "Please enter a valid 5 digit zip code."
+                        else:
+                            zip_code = None
                         # Get yelp ID
                         yelp_business_id = self.request.get("yelpBusinessID")
 
@@ -329,8 +340,7 @@ class EditHitlist(BaseHandler):
                                 # Or create new entity.
                                 eatery = Eatery(RestaurantName=restaurant_name,parent=couple_key)
 
-                            eatery.CuisineType = cuisine_type
-                            eatery.StreetAddress = street_address
+                            eatery.CuisineType = cuisine_type                            
                             eatery.City = city
                             eatery.State = state
                             eatery.NotesComments = notes_comments
@@ -341,7 +351,9 @@ class EditHitlist(BaseHandler):
                             eatery.P1Rating = p1_Rating
                             eatery.P2Rating = p2_Rating
                             eatery.AverageRating = average_rating
-                            eatery.YelpBusinessID = yelp_business_id
+                            eatery.StreetAddress = street_address
+                            eatery.ZipCode = zip_code
+                            eatery.YelpBusinessID = yelp_business_id                            
 
                             # Save new Eatery to DB
                             eatery.put()
@@ -502,6 +514,7 @@ class Eatery(db.Model):
     AverageRating = db.FloatProperty()
     YelpBusinessID = db.StringProperty()
     StreetAddress = db.StringProperty()
+    ZipCode = db.IntegerProperty()
 
     @classmethod
     def by_id(cls,eid,couple_key,keys_only):
