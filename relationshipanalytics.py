@@ -226,6 +226,7 @@ class EditHitlist(BaseHandler):
                             error_dict['error_name'] = error_name
                         
                         cuisine_type = self.request.get("cuisineType")
+                        street_address = self.request.get("streetAddress")
                         city = self.request.get("city")
                         state = self.request.get("state")
                         notes_comments = self.request.get("notesComments")
@@ -284,6 +285,9 @@ class EditHitlist(BaseHandler):
                                 error_dict[check[1]] = check[2]
                         else:
                             p2_Rating = None
+                        # Get yelp ID
+                        yelp_business_id = self.request.get("yelpBusinessID")
+
                         # Get eatery entity.
                         if edit_found:
                             # handler for edits.
@@ -326,6 +330,7 @@ class EditHitlist(BaseHandler):
                                 eatery = Eatery(RestaurantName=restaurant_name,parent=couple_key)
 
                             eatery.CuisineType = cuisine_type
+                            eatery.StreetAddress = street_address
                             eatery.City = city
                             eatery.State = state
                             eatery.NotesComments = notes_comments
@@ -336,6 +341,7 @@ class EditHitlist(BaseHandler):
                             eatery.P1Rating = p1_Rating
                             eatery.P2Rating = p2_Rating
                             eatery.AverageRating = average_rating
+                            eatery.YelpBusinessID = yelp_business_id
 
                             # Save new Eatery to DB
                             eatery.put()
@@ -494,6 +500,8 @@ class Eatery(db.Model):
     P1Rating = db.IntegerProperty()
     P2Rating = db.IntegerProperty()
     AverageRating = db.FloatProperty()
+    YelpBusinessID = db.StringProperty()
+    StreetAddress = db.StringProperty()
 
     @classmethod
     def by_id(cls,eid,couple_key,keys_only):
