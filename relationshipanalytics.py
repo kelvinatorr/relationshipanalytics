@@ -10,8 +10,9 @@ from time import sleep
 from google.appengine.api import users
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
-from google.appengine.ext import db
 from google.appengine.api import memcache
+
+import models
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
@@ -54,7 +55,7 @@ class Upload(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
         blob_info = upload_files[0]
         # Get the current user's Couple entity to set it as a ancestor for each entry in the csv.Dialect
         key = "Couple_Key|" + self.user.user_id()
-        couple_key = cache_entity(key,self.user.user_id(),None,Couple.by_user_id,keys_only=True)
+        couple_key = cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
         process_csv(blob_info,couple_key)
         # Delete file after import
         blobstore.delete(blob_info.key())
@@ -88,7 +89,7 @@ class Confirm(BaseHandler):
     def get(self):
         # TODO:Check if email is in db. Entered by the inviter.
         # If yes then create new user entity. and update Couple class to have a value for p2 google_id        
-        couple = Couple.by_P2Email(self.user.email())
+        couple = models.Couple.by_P2Email(self.user.email())
         if couple:
             couple.P2 = self.user.user_id()
             couple.P2Nickname = self.user.nickname()
@@ -100,10 +101,10 @@ class Confirm(BaseHandler):
 class MainPage(BaseHandler):
     def get(self):
         key = "Couple_Key|" + self.user.user_id()
-        couple_key = cache_entity(key,self.user.user_id(),None,Couple.by_user_id,keys_only=True)
+        couple_key = cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
         # Get the user's Couple's key       
-        # couple_key = Couple.by_user_id(self.user.user_id(),keys_only=True)
-        if couple_key:
+        # couple_key = models.Couple.by_user_id(self.user.user_id(),keys_only=True)        
+        if couple_key:            
             # get url arguments for filters
             filter_flag = self.request.get('filter')
             filters = None
@@ -116,7 +117,7 @@ class MainPage(BaseHandler):
                                 ,City=city
                                 ,State=state
                                 ,CuisineType=cuisine_type)
-            hitlist = self.get_hitlist(couple_key,filters)
+            hitlist = self.get_hitlist(couple_key,filters)            
             self.render('index.html',hitlist=hitlist)
         else:
             # If user is not associated with a couple redirect to registration page.
@@ -127,7 +128,7 @@ class MainPage(BaseHandler):
         # Check which button was pressed by the user.
         if search_button:
             key = "Couple_Key|" + self.user.user_id()
-            couple_key = cache_entity(key,self.user.user_id(),None,Couple.by_user_id,keys_only=True)
+            couple_key = cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
             if couple_key:                
                 search_attribute = self.request.get('attribute')
                 allowed_attributes = set(['RestaurantName','City','State','CuisineType'])
@@ -149,8 +150,8 @@ class MainPage(BaseHandler):
         hitlist = []
         for e_key in hitlist_keys:
             key = 'Eatery|' + str(e_key.id())
-            eatery = cache_entity(key,e_key.id(),couple_key,Eatery.by_id)
-            if filters:
+            eatery = cache_entity(key,e_key.id(),couple_key,models.Eatery.by_id)
+            if filters:                
                 match = True
                 # Go through dictionary of filters, if a property of the entity doesn't match a filter do not include in result.
                 for f in filters:
@@ -167,7 +168,7 @@ class MainPage(BaseHandler):
 class EditHitlist(BaseHandler):
     def get(self):
         key = "Couple|" + self.user.user_id()
-        couple = cache_entity(key,self.user.user_id(),None,Couple.by_user_id,keys_only=False)
+        couple = cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=False)
         if couple:
             eatery_id = self.request.get("id")
             if eatery_id:
@@ -177,7 +178,7 @@ class EditHitlist(BaseHandler):
                     if found:
                         # Get cache eatery
                         key = 'Eatery|' + str(eatery_id)
-                        eatery = cache_entity(key,eatery_id,couple.key(),Eatery.by_id)
+                        eatery = cache_entity(key,eatery_id,couple.key(),models.Eatery.by_id)
                         self.render('hitlist-edit.html',eatery=eatery,couple=couple)
                     else:
                         self.error(403)
@@ -196,7 +197,7 @@ class EditHitlist(BaseHandler):
         submit = self.request.get('submit')
         if submit:
             couple_memcache_key = "Couple_Key|" + self.user.user_id()
-            couple_key = cache_entity(couple_memcache_key,self.user.user_id(),None,Couple.by_user_id,keys_only=True)
+            couple_key = cache_entity(couple_memcache_key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
             if couple_key:
                 eatery_id = self.request.get("id")
                 if eatery_id: 
@@ -303,7 +304,7 @@ class EditHitlist(BaseHandler):
                         if edit_found:
                             # handler for edits.
                             key = 'Eatery|' + str(eatery_id)
-                            eatery = cache_entity(key,eatery_id,couple_key,Eatery.by_id)
+                            eatery = cache_entity(key,eatery_id,couple_key,models.Eatery.by_id)
 
                         if failed:
                             if edit_found:
@@ -311,7 +312,7 @@ class EditHitlist(BaseHandler):
                                 error_dict['eatery'] = eatery
                             # get couple object
                             couple_memcache_key = "Couple|" + self.user.user_id()
-                            couple = cache_entity(couple_memcache_key,self.user.user_id(),None,Couple.by_user_id,keys_only=False)
+                            couple = cache_entity(couple_memcache_key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=False)
                             # add couple to render dictionary
                             error_dict['couple'] = couple
                             if edit_found:
@@ -338,7 +339,7 @@ class EditHitlist(BaseHandler):
                                 eatery.RestaurantName = restaurant_name
                             else:
                                 # Or create new entity.
-                                eatery = Eatery(RestaurantName=restaurant_name,parent=couple_key)
+                                eatery = models.Eatery(RestaurantName=restaurant_name,parent=couple_key)
 
                             eatery.CuisineType = cuisine_type                            
                             eatery.City = city
@@ -363,7 +364,7 @@ class EditHitlist(BaseHandler):
                                 hitlist_key = "Hitlist|" + str(couple_key.id())
                                 hitlist_cache(hitlist_key,couple_key,update=True)
                             # refresh memcache
-                            eatery = cache_entity(key,eatery_id,couple_key,Eatery.by_id,update=True)
+                            eatery = cache_entity(key,eatery_id,couple_key,models.Eatery.by_id,update=True)
                             # Redirect to hitlist.
                             self.redirect("/")
                     else:
@@ -410,7 +411,12 @@ class EditHitlist(BaseHandler):
 
 class Test(BaseHandler):
     def get(self):
-        self.render("test.html")
+        key = "Couple|" + self.user.user_id()
+        # couple_key = cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
+        couple_key = models.Couple.by_user_id(self.user.user_id(),keys_only=True)
+        key = 'Eatery|' + '5092662981951488'
+        eatery = cache_entity(key,int('5092662981951488'),couple_key,entity_query_function=models.Eatery.by_id)
+        self.write('success')
 
 
 # Memcache functions.
@@ -419,7 +425,7 @@ def hitlist_cache(key,couple_key,update=False):
     hitlist = memcache.get(key)
     if not hitlist or update:        
         # Query all Eatery entities whose ancestor is the user's Couple
-        hitlist_query = Eatery.all(keys_only=True).ancestor(couple_key)
+        hitlist_query = models.Eatery.all(keys_only=True).ancestor(couple_key)
         hitlist = list(hitlist_query)
         memcache.set(key,hitlist)
     return hitlist
@@ -488,7 +494,7 @@ def process_csv(blob_info,couple_key):
         entry_id = entry.key().id()
         key = "Eatery|" + str(entry_id)
         # Add Eatery entry to memcache.
-        cache_entity(key,entry_id,couple_key,Eatery.by_id,update=True)
+        cache_entity(key,entry_id,couple_key,models.Eatery.by_id,update=True)
 
 
 def int_or_null(data):
@@ -496,54 +502,6 @@ def int_or_null(data):
         return int(data)
     else:
         return None
-
-# data models
-class Eatery(db.Model):
-    RestaurantName = db.StringProperty(required = True)
-    CuisineType = db.StringProperty()
-    City = db.StringProperty()
-    State = db.StringProperty()
-    NotesComments = db.StringProperty()
-    Completed = db.BooleanProperty()
-    FirstTripDate = db.DateProperty()
-    LastVisitDate = db.DateProperty()
-    NumberOfTrips = db.IntegerProperty()
-    DaysSinceLastTrip = db.IntegerProperty()
-    P1Rating = db.IntegerProperty()
-    P2Rating = db.IntegerProperty()
-    AverageRating = db.FloatProperty()
-    YelpBusinessID = db.StringProperty()
-    StreetAddress = db.StringProperty()
-    ZipCode = db.IntegerProperty()
-
-    @classmethod
-    def by_id(cls,eid,couple_key,keys_only):
-        e = cls.get_by_id(eid,parent=couple_key)
-        return e
-
-    def calc_days_since_last_trip(self):
-        date_offset = datetime.date.today() - self.LastVisitDate
-        return date_offset.days
-
-class Couple(db.Model):
-    P1 = db.StringProperty(required = True)
-    P1Email = db.StringProperty()
-    P1Nickname = db.StringProperty()
-    P2 = db.StringProperty()
-    P2Email = db.StringProperty(required=True)
-    P2Nickname = db.StringProperty()
-
-    @classmethod
-    def by_P2Email(cls, p2_email):
-        sub = cls.all().filter('P2Email =', p2_email).get()
-        return sub
-
-    @classmethod
-    def by_user_id(cls,user_id,parent_key=None,keys_only=False):
-        couple = cls.all(keys_only=keys_only).filter('P1 =', user_id).get()
-        if not couple:
-            couple = cls.all(keys_only=keys_only).filter('P2 =', user_id).get()
-        return couple
 
 #url handlers
 
