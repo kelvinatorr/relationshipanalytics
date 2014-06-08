@@ -48,3 +48,13 @@ class Couple(db.Model):
         if not couple:
             couple = cls.all(keys_only=keys_only).filter('P2 =', user_id).get()
         return couple
+
+class Trip(db.Model):
+    LocationID = db.IntegerProperty(required = True)
+    Type = db.StringProperty(required = True)
+    Date = db.DateProperty(required = True)
+
+    @classmethod
+    def by_location_id(cls,location_id,parent_key=None,keys_only=False):
+        trip = cls.all(keys_only=keys_only).filter('LocationID =', location_id).get()        
+        return trip

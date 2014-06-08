@@ -336,11 +336,14 @@ class EditHitlist(BaseHandler):
                             
                             # change eatery entry to reflect changes.
                             if edit_found:
-                                eatery.RestaurantName = restaurant_name
+                                eatery.RestaurantName = restaurant_name                                
                             else:
                                 # Or create new entity.
                                 eatery = models.Eatery(RestaurantName=restaurant_name,parent=couple_key)
-
+                            # if new trip add to trip db.
+                            self.increment_trip_db(eatery=eatery, couple_key=couple_key,
+                                            first_trip_date=first_trip_date, last_visit_date=last_visit_date,
+                                            number_of_trips=number_of_trips, edit=edit_found)
                             eatery.CuisineType = cuisine_type                            
                             eatery.City = city
                             eatery.State = state
@@ -373,6 +376,38 @@ class EditHitlist(BaseHandler):
                     self.redirect("/")
             else:
                 self.redirect("/register")
+
+    def increment_trip_db(self,eatery,couple_key,first_trip_date,last_visit_date,number_of_trips,edit):
+        """
+        Checks if a new Trip entity needs to be created.
+        """
+        new_trip = False        
+        if edit:            
+            if not eatery.FirstTripDate and first_trip_date:
+                # Couple visited a place for the 1st time.
+                new_trip = True
+                new_trip_date = first_trip_date
+            elif number_of_trips > eatery.NumberOfTrips:
+                # Couple visited a place again.
+                new_trip = True
+                if not last_visit_date:
+                    # Set trip date to today in case they didn't enter a last visit date.
+                    last_visit_date = datetime.date.today()
+                new_trip_date = last_visit_date
+        else:
+            # Handle a new Eatery entity creation and maybe a new trip.
+            if first_trip_date:
+                new_trip = True
+                new_trip_date = first_trip_date
+
+        if new_trip:
+            trip  = models.Trip(LocationID=eatery.key().id(),Type="EATERY",Date=new_trip_date,parent=couple_key)
+            trip.put()
+            # Update memcache.
+            key = "Trip|" + str(trip.key().id())
+            cache_entity(key=key,query_key=eatery.key().id(),
+                        parent_key=couple_key,entity_query_function=models.Trip.by_location_id,update=True)
+
 
     def check_rating(self,person,rating):
         """
