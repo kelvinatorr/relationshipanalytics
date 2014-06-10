@@ -561,7 +561,7 @@ def process_csv(blob_info,couple_key):
 					,AverageRating = average_rating
                     ,parent=couple_key
     				)        
-        entry = Eatery(**r)
+        entry = models.Eatery(**r)
         entry.put()
         entry_id = entry.key().id()
         key = "Eatery|" + str(entry_id)
