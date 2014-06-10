@@ -444,6 +444,43 @@ class EditHitlist(BaseHandler):
                 break
         return found
 
+class InitializeTrips(BaseHandler):
+    def get(self):
+        key = "Couple_Key|" + self.user.user_id()
+        couple_key = cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
+        if couple_key:
+            # get their hitlist.
+            hitlist_key = "Hitlist|" + str(couple_key.id())
+            hitlist_keys = hitlist_cache(hitlist_key,couple_key)
+            # Build a list of Eatery entities to render.
+            hitlist = []
+            for e_key in hitlist_keys:
+                key = 'Eatery|' + str(e_key.id())
+                eatery = cache_entity(key,e_key.id(),couple_key,models.Eatery.by_id)
+                # filter for Eateries with a last visit date.                
+                if eatery.LastVisitDate:
+                    # Add Trip for each Eatery, if FirstTripDate != Last Trip add another trip on First Trip date
+                    self.add_trip(eatery.key().id(),eatery.LastVisitDate,couple_key)
+                    if eatery.FirstTripDate and eatery.LastVisitDate > eatery.FirstTripDate:
+                        self.add_trip(eatery.key().id(),eatery.FirstTripDate,couple_key)
+        self.redirect('/')
+
+    def add_trip(self,location_id,trip_date,parent):
+        # check if trip already exists in the db.
+        trip_check = models.Trip.all(keys_only=True).filter("Date =",trip_date)
+        trip_check.filter("Type = ","EATERY")
+        trip_check.filter("LocationID = ",location_id)        
+        if not trip_check.get():
+            trip  = models.Trip(LocationID=location_id,Type="EATERY",Date=trip_date,parent=parent)
+            trip.put()
+            # Update memcache.
+            key = "Trip|" + str(trip.key().id())
+            cache_entity(key=key,query_key=location_id,
+                        parent_key=parent,entity_query_function=models.Trip.by_location_id,update=True)
+
+            
+
+
 class Test(BaseHandler):
     def get(self):
         key = "Couple|" + self.user.user_id()
@@ -546,5 +583,6 @@ application = webapp2.WSGIApplication([
    ,('/register',Register)
    ,('/confirm',Confirm)
    ,('/edit',EditHitlist)
+   ,('/initializetrips',InitializeTrips)
    ,('/test',Test)
 ], debug=True)
