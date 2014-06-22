@@ -19,7 +19,10 @@ handlers:
   static_dir: js
 
 - url: /static
-  static_dir: static  
+  static_dir: static
+
+- url: /fonts
+  static_dir: fonts
 
 - url: /blobstore.*
   script: blobstore.app

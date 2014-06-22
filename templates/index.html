@@ -45,7 +45,7 @@
                   <th>Cuisine Type</th>
                   <th>City</th>
                   <th>State</th>
-                  <th>Notes</th>
+                  <th>View Notes</th>
                   <th>Completed</th>                  
                 </tr>
               </thead>
@@ -61,7 +61,12 @@
                         <td>{{ e.CuisineType }}</td>
                         <td>{{ e.City }}</td>
                         <td>{{ e.State }}</td>
-                        <td>{{ e.NotesComments }}</td>
+                        <td>
+                          <a href="#" class="btn btn-small btn-primary"
+                             data-toggle="modal"
+                             data-target="#basicModal">View Notes
+                          </a>
+                        </td>
                         <td>{{ e.Completed }}</td>                        
                     </tr>
                 {% endfor %}                               
@@ -71,6 +76,20 @@
         </div>
         </div>     
 </div><!-- /.container -->
+<div class="modal fade" id="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <!-- <h4>Modal Body</h4> -->
+                <p id="modal-notes">Modal Body</p>
+            </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 {% block footer %}
     <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
@@ -82,6 +101,11 @@
         $('.combobox').combobox();
         $('#nav_hitlist').addClass('active');
         $("#hitlist").tablesorter();
+        $('#basicModal').on('show.bs.modal',function(e){
+          alert("Fired!");
+          $('#modal-notes').html('boom');
+          });
       });
+
     </script>
 {% endblock %}
