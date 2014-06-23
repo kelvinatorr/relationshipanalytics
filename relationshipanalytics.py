@@ -80,7 +80,7 @@ class Register(BaseHandler):
             self.render('register.html',invite_email=invite_email,error_invite_email=error_invite_email)
         else:            
             # Initialize new Couple entity. with P2Email as invite_email.
-            couple = Couple(P1=self.user.user_id(),P1Email=self.user.email(),P1Nickname=self.user.nickname()
+            couple = models.Couple(P1=self.user.user_id(),P1Email=self.user.email(),P1Nickname=self.user.nickname()
                             ,P2Email=invite_email)
             couple.put()
             self.write('Good job!')

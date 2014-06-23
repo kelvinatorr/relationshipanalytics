@@ -49,6 +49,14 @@ class Couple(db.Model):
             couple = cls.all(keys_only=keys_only).filter('P2 =', user_id).get()
         return couple
 
+    @classmethod
+    def by_email(cls,email,parent_key=None,keys_only=False):
+        couple = cls.all().filter('P1Email =', email).get()
+        if not couple:
+            # Try P2
+            couple = cls.all().filter('P2Email =', email).get()
+        return couple
+
 class Trip(db.Model):
     LocationID = db.IntegerProperty(required = True)
     Type = db.StringProperty(required = True)

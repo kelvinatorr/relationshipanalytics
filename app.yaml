@@ -5,6 +5,12 @@ api_version: 1
 threadsafe: true
 
 libraries:
+- name: pycrypto
+  version: latest
+
+- name: endpoints
+  version: 1.0
+
 - name: webapp2
   version: latest
 
@@ -26,6 +32,9 @@ handlers:
 
 - url: /blobstore.*
   script: blobstore.app
+
+- url: /_ah/spi/.*
+  script: hitlist_api.APPLICATION
 
 - url: /.*
   script: relationshipanalytics.application
