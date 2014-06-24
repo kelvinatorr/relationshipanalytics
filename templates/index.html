@@ -1,6 +1,20 @@
 {% extends "dashboard-base.html" %}
 
 {% block content %}
+<div class="modal fade" id="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content   ">
+            <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h4 class="modal-title" id="myModalLabel">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <!-- <h4>Modal Body</h4> -->
+                <p id="modal-notes">Modal Body</p>
+            </div>
+    </div>
+  </div>
+</div>
     <div class="container">
       <h2>Search</h2>
       <form class="form-inline" role="form" method="post">        
@@ -31,7 +45,7 @@
           </a>
         </div>
       </div>
-    </div>
+    </div>    
     <div class="container">
       <div class="row">
         <div class="col-md-12">
@@ -62,9 +76,9 @@
                         <td>{{ e.City }}</td>
                         <td>{{ e.State }}</td>
                         <td>
-                          <a href="#" class="btn btn-small btn-primary"
-                             data-toggle="modal"
-                             data-target="#basicModal">View Notes
+                          <a href="#" class="btn btn-small btn-primary notes-button"
+                             data-toggle="modal" data-target="#basicModal"
+                             value="{{e.key().id()}}">View Notes         
                           </a>
                         </td>
                         <td>{{ e.Completed }}</td>                        
@@ -76,36 +90,31 @@
         </div>
         </div>     
 </div><!-- /.container -->
-<div class="modal fade" id="basicModal" tabindex="-1" role="dialog" aria-labelledby="basicModal" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-            <h4 class="modal-title" id="myModalLabel">Modal title</h4>
-            </div>
-            <div class="modal-body">
-                <!-- <h4>Modal Body</h4> -->
-                <p id="modal-notes">Modal Body</p>
-            </div>
-    </div>
-  </div>
-</div>
+
 {% endblock %}
 {% block footer %}
     <link rel="stylesheet" type="text/css" href="/css/admin.css"/>
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/>
     <script src="/js/bootstrap-combobox.js"></script>
     <script src="/js/jquery.tablesorter.min.js"></script>
+    <script async src="/js/hitlist.js"></script>   
     <script type="text/javascript">
       $(document).ready(function(){
         $('.combobox').combobox();
         $('#nav_hitlist').addClass('active');
         $("#hitlist").tablesorter();
-        $('#basicModal').on('show.bs.modal',function(e){
-          alert("Fired!");
-          $('#modal-notes').html('boom');
-          });
+        
+        $('#basicModal').on('hidden.bs.modal',function(e){
+          // set modal contents back to empty
+          $('#modal-notes').empty();
+          // set modal header back to empty
+          $('#myModalLabel').empty();
+        });
+        $('.notes-button').attr('disabled',true);
       });
-
+      function init() {
+          ra.hitlist.init('//' + window.location.host + '/_ah/api');
+      }
     </script>
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>  
 {% endblock %}

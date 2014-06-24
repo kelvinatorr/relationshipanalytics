@@ -3,8 +3,7 @@ import logging
 from protorpc import messages
 from protorpc import message_types
 from protorpc import remote
-
-from google.appengine.ext.endpoints import users_id_token
+from time import sleep
 
 from models import Eatery
 from models import Couple
@@ -46,11 +45,12 @@ class HelloWorldApi(remote.Service):
     """ hitlist API"""
     # pass
     ID_RESOURCE = endpoints.ResourceContainer(message_types.VoidMessage,id=messages.IntegerField(1,variant=messages.Variant.INT32))
-    
-    @endpoints.method(ID_RESOURCE, EateryNotes,path='eatery_notes/{id}', http_method='GET',name='hitlist.getEateryNotes')
+
+    @endpoints.method(ID_RESOURCE, EateryNotes,path='eatery_notes/{id}', http_method='GET',name='eateries.getEateryNotes')
     def eatery_notes_get(self, request):
         current_user = endpoints.get_current_user()
         if not current_user:
+            logging.error("Yup not signed in!!!")
             raise endpoints.UnauthorizedException("Please sign in.")
         else:
             # Get couple key                       
@@ -64,7 +64,7 @@ class HelloWorldApi(remote.Service):
             e = Eatery.by_id(request.id,couple_key,None)
             if e:                
                 # Initialize the EateryMessage
-                e_message = EateryNotes(restaurant_name=e.RestaurantName,notes_comments=e.NotesComments,status_code=0)
+                e_message = EateryNotes(restaurant_name=e.RestaurantName,notes_comments=e.NotesComments,status_code=0)                
                 return e_message
             else:
                 raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
