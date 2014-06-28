@@ -46,7 +46,7 @@ class EateryNotes(messages.Message):
 class HelloWorldApi(remote.Service):
     """ hitlist API"""
     # pass
-    ID_RESOURCE = endpoints.ResourceContainer(message_types.VoidMessage,id=messages.IntegerField(1,variant=messages.Variant.INT32))
+    ID_RESOURCE = endpoints.ResourceContainer(message_types.VoidMessage,id=messages.IntegerField(1,variant=messages.Variant.INT64))
 
     @endpoints.method(ID_RESOURCE, EateryNotes,path='eatery_notes/{id}', http_method='GET',name='eateries.getEateryNotes')
     def eatery_notes_get(self, request):
