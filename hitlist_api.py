@@ -5,6 +5,8 @@ from protorpc import message_types
 from protorpc import remote
 from time import sleep
 
+import ra_memcache
+
 from models import Eatery
 from models import Couple
 
@@ -53,15 +55,17 @@ class HelloWorldApi(remote.Service):
             logging.error("Yup not signed in!!!")
             raise endpoints.UnauthorizedException("Please sign in.")
         else:
-            # Get couple key                       
-            couple_key = Couple.by_email(current_user.email(),keys_only=True)
+            # Get couple key
+            key = "Couple_Key|" + current_user.email()
+            couple_key = ra_memcache.cache_entity(key,current_user.email(),None,Couple.by_email,keys_only=True)                   
+            # couple_key = Couple.by_email(current_user.email(),keys_only=True)
             if not couple_key:
                 # raise endpoints.UnauthorizedException("Couple key not found for %s" % current_user.email())
-                return EateryNotes(status_code=-1)
-            # token = users_id_token._get_token(None)
-            # logging.error("Hellowww " + token)
+                return EateryNotes(status_code=-1)            
             # Retreive the eatery
-            e = Eatery.by_id(request.id,couple_key,None)
+            key = 'Eatery|' + str(request.id)
+            e = ra_memcache.cache_entity(key,request.id,couple_key,Eatery.by_id)
+            # e = Eatery.by_id(request.id,couple_key,None)
             if e:                
                 # Initialize the EateryMessage
                 e_message = EateryNotes(restaurant_name=e.RestaurantName,notes_comments=e.NotesComments,status_code=0)                
