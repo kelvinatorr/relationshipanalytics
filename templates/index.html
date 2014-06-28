@@ -24,9 +24,9 @@
         </div>
         <div class="form-group">
           <label class="sr-only" for="searchAttribute">Search Attribute</label>
-          <select class="combobox input-large form-control" name="attribute" id="searchAttribute" required>
-            <option value="" selected="selected">Select an attribute</option>
-            <option value="RestaurantName">Restaurant Name</option>
+          <select class="input-large form-control" name="attribute" id="searchAttribute" required>
+            <!-- <option value="" selected="selected">Select an attribute</option> -->
+            <option value="RestaurantName" selected="selected">Restaurant Name</option>
             <option value="City">City</option>
             <option value="State">State</option>
             <option value="CuisineType">Cuisine Type</option>           
@@ -100,7 +100,7 @@
     <script async src="/js/hitlist.js"></script>   
     <script type="text/javascript">
       $(document).ready(function(){
-        $('.combobox').combobox();
+        //$('.combobox').combobox();
         $('#nav_hitlist').addClass('active');
         $("#hitlist").tablesorter();
         
