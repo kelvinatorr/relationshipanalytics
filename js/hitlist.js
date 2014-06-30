@@ -90,14 +90,25 @@ ra.hitlist.getEateryNotes = function(id) {
 ra.hitlist.enableButtons = function() {
   $('.notes-button').attr('disabled',false);
   var eateryID;
+  var modalCaller;
   $('.notes-button').click(function(){
     //alert($(this).attr("value"));
-    eateryID = $(this).attr("value");    
+    eateryID = $(this).attr("value");
+    modalCaller = 1;
   });
 
-  $('#basicModal').on('show.bs.modal',function(e){    
-    // Call api	 
-    ra.hitlist.getEateryNotes(eateryID);    
+  // Register table row click event.
+  $('.eatery-row').click(function () {
+    eateryID = $(this).attr("value");
+    modalCaller = 2;
+    //alert(eateryID);
+  })
+
+  $('#basicModal').on('show.bs.modal',function(e){
+    // Call api
+    if (modalCaller == 1){
+      ra.hitlist.getEateryNotes(eateryID);  
+    }    
     });
   $('#signinButton').click(ra.hitlist.auth);
   // var getGreeting = document.querySelector('#getGreeting');
