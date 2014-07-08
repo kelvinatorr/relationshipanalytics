@@ -98,11 +98,10 @@ ra.hitlist.enableButtons = function() {
   });
 
   // Register table row click event.
-  $('.eatery-row').click(function () {
-    eateryID = $(this).attr("value");
-    modalCaller = 2;
-    //alert(eateryID);
-  })
+  // $('.eatery-row').click(function () {
+  //   eateryID = $(this).attr("value");
+  //   modalCaller = 2;    
+  // })
 
   $('#basicModal').on('show.bs.modal',function(e){
     // Call api

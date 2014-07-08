@@ -77,7 +77,7 @@
                                 <button class="btn btn-small btn-primary" type="submit" name="edit" value="{{ e.RestaurantName }}">Edit</button>
                             </a>
                         </td>
-                        <td class='eatery-row' data-toggle="modal" data-target="#basicModal" value="{{e.key().id()}}">{{ e.RestaurantName }}</td>
+                        <td class='eatery-row' value="{{e.key().id()}}">{{ e.RestaurantName }}</td>
                         <td>{{ e.CuisineType }}</td>
                         <td>{{ e.City }}</td>
                         <td>{{ e.State }}</td>
@@ -100,7 +100,6 @@
 {% endblock %}
 {% block footer %}
     <link rel="stylesheet" type="text/css" href="/css/admin.css"/>    
-    <script src="/js/bootstrap-combobox.js"></script>
     <script src="/js/jquery.tablesorter.min.js"></script>
     <script async src="/js/hitlist.js"></script>   
     <script type="text/javascript">
@@ -114,11 +113,11 @@
           $('#modal-notes').empty();
           // set modal header back to empty
           $('#myModalLabel').empty();     
-        });
-        // Disable notes button before api is ready.
-        $('.notes-button').attr('disabled',true);        
+        });        
       });
       function init() {
+          // Disable notes button before api is ready.
+          $('.notes-button').attr('disabled',true);        
           ra.hitlist.init('//' + window.location.host + '/_ah/api');
       }
     </script>
