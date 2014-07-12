@@ -19,6 +19,8 @@ class Eatery(db.Model):
     YelpBusinessID = db.StringProperty()
     StreetAddress = db.StringProperty()
     ZipCode = db.IntegerProperty()
+    Latitude = db.FloatProperty()
+    Longitude = db.FloatProperty()
 
     @classmethod
     def by_id(cls,eid,couple_key,keys_only):

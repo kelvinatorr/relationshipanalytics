@@ -10,7 +10,7 @@ import ra_memcache
 from models import Eatery
 from models import Couple
 
-WEB_CLIENT_ID = '356591658043-r06nli81msv1s280plb91a2kjn25c02b.apps.googleusercontent.com'
+WEB_CLIENT_ID = '706028337645-oe249o4vs0lsm199561e6pdua98vk9ge.apps.googleusercontent.com'
 ANDROID_CLIENT_ID = 'replace this with your Android client ID'
 IOS_CLIENT_ID = 'replace this with your iOS client ID'
 ANDROID_AUDIENCE = WEB_CLIENT_ID
@@ -32,12 +32,20 @@ class EateryMessage(messages.Message):
     average_rating = messages.FloatField(13)
     yelp_business_id = messages.StringField(14)
     street_address = messages.StringField(15)
-    zip_code = messages.IntegerField(16)
+    zip_code = messages.IntegerField(16)    
 
 class EateryNotes(messages.Message):
     restaurant_name = messages.StringField(1)
     notes_comments = messages.StringField(2)
     status_code = messages.IntegerField(3)
+
+class EateryLocation(messages.Message):
+    restaurant_name = messages.StringField(1)
+    address_string = messages.StringField(2)
+    latitude = messages.FloatField(3)
+    longitude = messages.FloatField(4)
+    geocoded = messages.BooleanField(5)
+    status_code = messages.IntegerField(6)
 
 @endpoints.api(name='hitlist',version='v1'
                 ,allowed_client_ids=[WEB_CLIENT_ID, endpoints.API_EXPLORER_CLIENT_ID]
@@ -61,7 +69,7 @@ class HelloWorldApi(remote.Service):
             # couple_key = Couple.by_email(current_user.email(),keys_only=True)
             if not couple_key:
                 # raise endpoints.UnauthorizedException("Couple key not found for %s" % current_user.email())
-                return EateryNotes(status_code=-1)            
+                return EateryNotes(status_code=-1)        
             # Retreive the eatery
             key = 'Eatery|' + str(request.id)
             e = ra_memcache.cache_entity(key,request.id,couple_key,Eatery.by_id)
@@ -72,5 +80,39 @@ class HelloWorldApi(remote.Service):
                 return e_message
             else:
                 raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
+
+    @endpoints.method(ID_RESOURCE, EateryLocation,path='eatery_location/{id}', http_method='GET',name='eateries.getEateryLocation')
+    def eatery_location_get(self, request):
+        current_user = endpoints.get_current_user()
+        if not current_user:
+            logging.error("Yup not signed in!!!")
+            raise endpoints.UnauthorizedException("Please sign in.")
+        else:
+            # Get couple key
+            key = "Couple_Key|" + current_user.email()
+            couple_key = ra_memcache.cache_entity(key,current_user.email(),None,Couple.by_email,keys_only=True)                   
+            # couple_key = Couple.by_email(current_user.email(),keys_only=True)
+            if not couple_key:
+                # raise endpoints.UnauthorizedException("Couple key not found for %s" % current_user.email())
+                return EateryLocation(status_code=-1)
+            # Retreive the eatery
+            key = 'Eatery|' + str(request.id)
+            e = ra_memcache.cache_entity(key,request.id,couple_key,Eatery.by_id)            
+            if e:
+                # Build address string
+                a = [e.StreetAddress,e.City,e.State,e.ZipCode]
+                address_string = '%s %s %s %s' % tuple(a)
+                # Check if this eatery has been geocoded.
+                if e.Latitude and e.Longitude:
+                    geocoded = True
+                else:
+                    geocoded = False
+                # Initialize the EateryMessage                
+                e_message = EateryLocation(restaurant_name=e.RestaurantName,latitude=e.Latitude
+                    ,longitude=e.Longitude,address_string=address_string,geocoded=geocoded,status_code=0)         
+                return e_message
+            else:
+                raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
+
 
 APPLICATION = endpoints.api_server([HelloWorldApi])
