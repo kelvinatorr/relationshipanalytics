@@ -58,61 +58,63 @@ class HelloWorldApi(remote.Service):
 
     @endpoints.method(ID_RESOURCE, EateryNotes,path='eatery_notes/{id}', http_method='GET',name='eateries.getEateryNotes')
     def eatery_notes_get(self, request):
-        current_user = endpoints.get_current_user()
-        if not current_user:
-            logging.error("Yup not signed in!!!")
+        status_code,couple_key = self.auth_api_user()
+        if status_code == -2:
             raise endpoints.UnauthorizedException("Please sign in.")
+        elif status_code == -1:
+            return EateryNotes(status_code=-1)
+        # Retreive the eatery
+        key = 'Eatery|' + str(request.id)
+        e = ra_memcache.cache_entity(key,request.id,couple_key,Eatery.by_id)
+        # e = Eatery.by_id(request.id,couple_key,None)
+        if e:                
+            # Initialize the EateryMessage
+            e_message = EateryNotes(restaurant_name=e.RestaurantName,notes_comments=e.NotesComments,status_code=0)                
+            return e_message
         else:
-            # Get couple key
-            key = "Couple_Key|" + current_user.email()
-            couple_key = ra_memcache.cache_entity(key,current_user.email(),None,Couple.by_email,keys_only=True)                   
-            # couple_key = Couple.by_email(current_user.email(),keys_only=True)
-            if not couple_key:
-                # raise endpoints.UnauthorizedException("Couple key not found for %s" % current_user.email())
-                return EateryNotes(status_code=-1)        
-            # Retreive the eatery
-            key = 'Eatery|' + str(request.id)
-            e = ra_memcache.cache_entity(key,request.id,couple_key,Eatery.by_id)
-            # e = Eatery.by_id(request.id,couple_key,None)
-            if e:                
-                # Initialize the EateryMessage
-                e_message = EateryNotes(restaurant_name=e.RestaurantName,notes_comments=e.NotesComments,status_code=0)                
-                return e_message
-            else:
-                raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
+            raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
 
     @endpoints.method(ID_RESOURCE, EateryLocation,path='eatery_location/{id}', http_method='GET',name='eateries.getEateryLocation')
     def eatery_location_get(self, request):
+        status_code,couple_key = self.auth_api_user()
+        if status_code == -2:
+            raise endpoints.UnauthorizedException("Please sign in.")
+        elif status_code == -1:
+            return EateryLocation(status_code=-1)
+        # Retreive the eatery
+        key = 'Eatery|' + str(request.id)
+        e = ra_memcache.cache_entity(key,request.id,couple_key,Eatery.by_id)            
+        if e:
+            # Build address string
+            a = [e.StreetAddress,e.City,e.State,e.ZipCode]
+            address_string = '%s %s %s %s' % tuple(a)
+            # Check if this eatery has been geocoded.
+            if e.Latitude and e.Longitude:
+                geocoded = True
+            else:
+                geocoded = False
+            # Initialize the EateryMessage                
+            e_message = EateryLocation(restaurant_name=e.RestaurantName,latitude=e.Latitude
+                ,longitude=e.Longitude,address_string=address_string,geocoded=geocoded,status_code=status_code)         
+            return e_message
+        else:
+            raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
+
+    def auth_api_user(self):
         current_user = endpoints.get_current_user()
         if not current_user:
             logging.error("Yup not signed in!!!")
-            raise endpoints.UnauthorizedException("Please sign in.")
+            return -2,None
         else:
             # Get couple key
             key = "Couple_Key|" + current_user.email()
             couple_key = ra_memcache.cache_entity(key,current_user.email(),None,Couple.by_email,keys_only=True)                   
             # couple_key = Couple.by_email(current_user.email(),keys_only=True)
-            if not couple_key:
-                # raise endpoints.UnauthorizedException("Couple key not found for %s" % current_user.email())
-                return EateryLocation(status_code=-1)
-            # Retreive the eatery
-            key = 'Eatery|' + str(request.id)
-            e = ra_memcache.cache_entity(key,request.id,couple_key,Eatery.by_id)            
-            if e:
-                # Build address string
-                a = [e.StreetAddress,e.City,e.State,e.ZipCode]
-                address_string = '%s %s %s %s' % tuple(a)
-                # Check if this eatery has been geocoded.
-                if e.Latitude and e.Longitude:
-                    geocoded = True
-                else:
-                    geocoded = False
-                # Initialize the EateryMessage                
-                e_message = EateryLocation(restaurant_name=e.RestaurantName,latitude=e.Latitude
-                    ,longitude=e.Longitude,address_string=address_string,geocoded=geocoded,status_code=0)         
-                return e_message
-            else:
-                raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
+            if not couple_key:                
+                return -1,None
+            return 0,couple_key
+
+
 
 
 APPLICATION = endpoints.api_server([HelloWorldApi])
