@@ -111,6 +111,12 @@
 			    <p class="errorMessage">{{error_zip_code}}</p>
 			  </div>
 			  <div class="form-group additional-field hide">
+			    <label for="coordinates" class="col-sm-2 control-label" id="coordinatesLabel">Coordinates</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control" id="coordinates" value="" title="These coordinates are used to map this eatery and are from Google's geocoding api." disabled>
+			    </div>
+			  </div>
+			  <div class="form-group additional-field hide">
 			    <label for="yelpbusinessid" class="col-sm-2 control-label">Yelp Business ID</label>
 			    <div class="col-sm-4">
 			      <input type="text" class="form-control" id="yelpbusinessid" value="{{eatery.YelpBusinessID if eatery.YelpBusinessID != None}}" name="yelpBusinessID" title="A Yelp-Business-ID will help us gather more information about the restaurant.">
@@ -150,6 +156,8 @@
         					,"streetaddress": "{{eatery.StreetAddress}}"
         					,"zipcode": "{{eatery.ZipCode}}"
         					,"yelpbusinessid": "{{eatery.YelpBusinessID}}"
+        					,"latitude": "{{eatery.Latitude if eatery.Latitude != None}}"
+        					,"longitude": "{{eatery.Longitude if eatery.Longitude != None}}"
   	  					};
       $(document).ready(function(){
               
@@ -213,5 +221,23 @@
         	$('#changelegend').css("visibility","hidden");
         }                
       });
+      //$('[rel=tooltip]').tooltip();
+      if (current_values.latitude && current_values.longitude){
+      	//alert("Yes there is one");
+      	document.getElementById('coordinates').value = current_values.latitude + "," + current_values.longitude;      	
+      }
+      else{
+      	// Change label of coordinates to include geocoding button
+      	var b = document.createElement("a");
+      	b.setAttribute('href',"javascript:void(0);");
+      	b.setAttribute('id','geocodeButton');
+      	b.setAttribute('data-toggle','tooltip')
+      	b.setAttribute('title','Get the latitude and longitude for the given address')
+      	b.innerHTML = "Geocode";
+      	var coordinateLabel = document.getElementById('coordinatesLabel');
+      	coordinateLabel.innerHTML = "";
+      	coordinateLabel.appendChild(b);
+      	$('#geocodeButton').tooltip();
+      }
     </script>
 {% endblock %}
