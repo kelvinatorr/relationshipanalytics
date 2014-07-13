@@ -40,12 +40,13 @@ class EateryNotes(messages.Message):
     status_code = messages.IntegerField(3)
 
 class EateryLocation(messages.Message):
-    restaurant_name = messages.StringField(1)
-    address_string = messages.StringField(2)
-    latitude = messages.FloatField(3)
-    longitude = messages.FloatField(4)
-    geocoded = messages.BooleanField(5)
-    status_code = messages.IntegerField(6)
+    eatery_id = messages.IntegerField(1,variant=messages.Variant.INT64)
+    restaurant_name = messages.StringField(2)
+    address_string = messages.StringField(3)
+    latitude = messages.FloatField(4)
+    longitude = messages.FloatField(5)
+    geocoded = messages.BooleanField(6)
+    status_code = messages.IntegerField(7)
 
 @endpoints.api(name='hitlist',version='v1'
                 ,allowed_client_ids=[WEB_CLIENT_ID, endpoints.API_EXPLORER_CLIENT_ID]
@@ -99,6 +100,25 @@ class HelloWorldApi(remote.Service):
             return e_message
         else:
             raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
+
+    @endpoints.method(EateryLocation,EateryLocation,path='eatery_geocode',http_method='POST',name='eateries.geocode')
+    def eatery_geocode_insert(self,request):
+        status_code,couple_key = self.auth_api_user()
+        if status_code == -2:
+            raise endpoints.UnauthorizedException("Please sign in.")
+        elif status_code == -1:
+            return EateryLocation(status_code=-1)
+        key = 'Eatery|' + str(request.eatery_id)
+        eatery = ra_memcache.cache_entity(key,request.eatery_id,couple_key,Eatery.by_id)
+        if eatery:
+            eatery.Latitude = request.latitude
+            eatery.Longitude = request.longitude
+            eatery.put()
+            # Refresh memcache
+            eatery = ra_memcache.cache_entity(key,request.eatery_id,couple_key,Eatery.by_id,update=True)
+        else:
+            return EateryLocation(status_code=-2)
+        return EateryLocation(status_code=0)
 
     def auth_api_user(self):
         current_user = endpoints.get_current_user()

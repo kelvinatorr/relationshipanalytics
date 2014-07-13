@@ -485,12 +485,7 @@ class InitializeTrips(BaseHandler):
 
 class Test(BaseHandler):
     def get(self):
-        key = "Couple|" + self.user.user_id()
-        # couple_key = ra_memcache.cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
-        couple_key = models.Couple.by_user_id(self.user.user_id(),keys_only=True)
-        key = 'Eatery|' + '5092662981951488'
-        eatery = ra_memcache.cache_entity(key,int('5092662981951488'),couple_key,entity_query_function=models.Eatery.by_id)
-        self.write('success')
+        self.render('test.html')
 
 
 # helper functions
