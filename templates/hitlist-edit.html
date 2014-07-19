@@ -1,7 +1,9 @@
 {% extends "dashboard-base.html" %}
-
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>
+{% endblock %}
 {% block content %}
-
 <div class="container">
 	<div class="row">
     	<div class="col-md-8">
@@ -141,10 +143,6 @@
 </div><!-- /.container -->
 {% endblock %}
 {% block footer %}
-    <link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>
-    <!-- <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/> -->
-    <!--<script src="/js/bootstrap-combobox.js"></script> -->
     <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>    
     <script>
       var current_values = {"name":"{{eatery.RestaurantName|safe}}"
