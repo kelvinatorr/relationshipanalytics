@@ -485,7 +485,7 @@ class InitializeTrips(BaseHandler):
 
 class Test(BaseHandler):
     def get(self):
-        self.render('test.html')
+        self.render('testmap.html')
 
 
 # helper functions

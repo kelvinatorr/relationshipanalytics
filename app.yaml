@@ -30,6 +30,9 @@ handlers:
 - url: /fonts
   static_dir: fonts
 
+- url: /bower_components
+  static_dir: bower_components
+
 - url: /blobstore.*
   script: blobstore.app
 

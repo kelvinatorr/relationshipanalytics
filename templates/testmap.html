@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/bower_components/platform/platform.js"></script>
+    <link rel="import" href="/bower_components/google-map/google-map.html">
+       <style>
+      body, html {
+        height: 20%;
+        margin: 0;
+      }
+      .container{
+        height: 100%;
+      }
+
+      google-map {
+        display: block;
+        height: 100%;
+      }
+    </style>
+    <title>Relationship Analytics</title>
+  </head>
+  <body>
+
+    <div class="container">
+
+    <google-map latitude="37.779" longitude="-122.3892" disableDefaultUI>
+      <google-map-marker latitude="37.779" longitude="-122.3892"
+                         title="Go Giants!" draggable="true"></google-map-marker>
+    </google-map>
+    </div>
+    
+    
+  </body>
+</html>

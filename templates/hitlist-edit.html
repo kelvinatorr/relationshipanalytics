@@ -1,7 +1,24 @@
 {% extends "dashboard-base.html" %}
+{% block tophead %}
+<script src="/bower_components/platform/platform.js"></script>
+<link rel="import" href="/bower_components/google-map/google-map.html">
+{% endblock %}
 {% block head %}
 	<link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
-	<link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>	
+    
+    <style type="text/css">
+      body, html, #map-column {
+         height: 700px;
+        /*margin: 0;*/
+      }
+
+       google-map {
+        display: block;
+        height: 40%;
+        margin: 0;
+      }
+    </style>
 {% endblock %}
 {% block content %}
 <div class="container">
@@ -135,14 +152,15 @@
 			</form>
 
 	    </div>
-	    <div class="col-md-4">
-	    	<br></br>
-	    	<img class="img-responsive" src="http://i.kinja-img.com/gawker-media/image/upload/s--26JZsMf6--/c_fit,fl_progressive,q_80,w_636/ypshvszogivemh0eifvc.jpg"\>
+	    <div class="col-md-4" id="map-column">
+	    <br>
+		 	<google-map id="gmap" latitude="36.1215" longitude="-115.1739" zoom="14">
+		    </google-map>
 	    </div>
 	  </div>
-</div><!-- /.container -->
+</div> <!-- /.container -->
 {% endblock %}
-{% block footer %}
+{% block footer %}	
     <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>    
     <script>
       var current_values = {"name":"{{eatery.RestaurantName|safe}}"
