@@ -200,11 +200,20 @@
         					,"longitude": "{{eatery.Longitude if eatery.Longitude != None}}"
   	  					};
 
-  	  var hitlistGeocodeInit = function (){
+  	  // Inform the user that a geocoding error has occured.
+  	  var informGeocodeError = function(message){
+  	  	geocodeError = document.getElementById('geocode-error');
+  	  	geocodeError.innerHTML = message;
+  	  	// Make the text red.
+  	  	geocodeError.classList.toggle('errorMessage',true);
+  	  	geocodeError.classList.toggle('dbMessage',false);
+  	  };
+
+  	  var hitlistGeocodeInit = function (){  	  	
   	  	// Form the complete address string.
   	  	var streetAddress = document.getElementById("streetaddress").value.trim();  	  	
   	  	if (!streetAddress){
-  	  		document.getElementById('geocode-error').innerHTML = "A street address is required to geocode.";
+  	  		informGeocodeError("A street address is required to geocode."); 	  		
   	  		return false;
   	  	}
   	  	else{
@@ -213,16 +222,15 @@
   	  	var city = document.getElementById("city").value.trim();
   	  	var state = document.getElementById("state").value.trim();
   	  	var zipCode = document.getElementById("zipcode").value.trim();  	  	
-  	  	if (!zipCode || isNaN(zipCode) || zipCode <= 9999){
-  	  		document.getElementById('geocode-error').innerHTML = "A valid zip code is required to geocode.";
+  	  	if (!zipCode || isNaN(zipCode) || zipCode <= 9999){  	  		
+  	  		informGeocodeError("A valid zip code is required to geocode.");
   	  		return false;
   	  	}
   	  	else{
   	  		document.getElementById('geocode-error').innerHTML = "";
   	  	}
   	  	var addressString = streetAddress + ' ' + city + ' ' + state + ' ' + zipCode;
-  	  	// call the geocode function in hitlist-edit.js
-  	  	//alert();
+  	  	// Call the geocode function in hitlist-edit.js  	  	
   	  	ra.hitlist.edit.googleGeocode(addressString);
   	  };
 
@@ -242,11 +250,11 @@
       	 	b.setAttribute('data-toggle','tooltip')
       	 	b.setAttribute('title','Get the latitude and longitude for the given address')
       	 	b.innerHTML = "Geocode";
-      	 	var coordinateLabel = document.getElementById('coordinatesLabel');
-      	 	coordinateLabel.innerHTML = "";      	 	
+      	 	var coordinatesLabel = document.getElementById('coordinatesLabel');
+      	 	coordinatesLabel.innerHTML = "";      	 	
       	 	// Add click event listener to the button.      	 	
 			b.addEventListener("click", hitlistGeocodeInit, false);
-			coordinateLabel.appendChild(b);
+			coordinatesLabel.appendChild(b);
       	 	$('#geocodeButton').tooltip();
         }
       });

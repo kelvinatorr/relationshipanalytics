@@ -32,11 +32,11 @@ ra.hitlist.edit.saveGeocode = function(latitude,longitude){
 	requestData.longitude = longitude;
 	requestData.eatery_id = ra.hitlist.edit.EATERYID;
 	gapi.client.hitlist.eateries.geocode(requestData).execute(function(resp) {
-	  alert("Boom headshot!");
-	        // if (!resp.code) {
-	        //         //Just logging to console now, you can do your check here/display message
-	        //         console.log(resp.id + ":" + resp.author + ":" + resp.message);
-	        // }
+		// Inform user that the coordinates have been saved to the database.
+	  	var geocodeError = document.getElementById('geocode-error');
+	  	geocodeError.innerHTML = "Coordinates have been saved to the database."
+	  	geocodeError.classList.toggle('errorMessage',false);
+	  	geocodeError.classList.toggle('dbMessage',true);
 	});
 };
 
@@ -62,6 +62,12 @@ ra.hitlist.edit.googleGeocode = function(addressString) {
 	    document.getElementById('coordinates').value = locationResult.lat() + "," + locationResult.lng();
 	    // Call the function that saves the coordinates to the DB.
 	    ra.hitlist.edit.saveGeocode(locationResult.lat(),locationResult.lng());
+	    // Change label of coordinates input box.
+	    var coordinatesLabel = document.getElementById('coordinatesLabel');
+	    var geocodeButton = document.getElementById('geocodeButton');
+	    coordinatesLabel.removeChild(geocodeButton);
+	    coordinatesLabel.innerHTML = "Coordinates";
+
 	  }
 	  else{	    
 	    document.getElementById('geocode-error').innerHTML = "Geocode unsuccessful: " + status;
