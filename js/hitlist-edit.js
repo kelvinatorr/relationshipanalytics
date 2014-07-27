@@ -41,8 +41,8 @@ ra.hitlist.edit.googleGeocode = function(addressString) {
 	    document.getElementById('coordinates').value = locationResult.lat() + "," + locationResult.lng();
 	    // Call the function that saves the coordinates to the DB.
 	  }
-	  else{
-	    alert("Geocode unsuccessful: " + status);
+	  else{	    
+	    document.getElementById('geocode-error').innerHTML = "Geocode unsuccessful: " + status;
 	  }        
 	});
 };
