@@ -180,6 +180,7 @@
 {% block footer %}	
     <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script type="text/javascript" src="/js/ra-auth.js"></script>
     <script type="text/javascript" src="/js/hitlist-edit.js"></script>
     <script>
       var current_values = {"name":"{{eatery.RestaurantName|safe}}"
@@ -221,7 +222,7 @@
   	  	}
   	  	var addressString = streetAddress + ' ' + city + ' ' + state + ' ' + zipCode;
   	  	// call the geocode function in hitlist-edit.js
-  	  	alert(addressString);
+  	  	//alert();
   	  	ra.hitlist.edit.googleGeocode(addressString);
   	  };
 
@@ -325,5 +326,9 @@
         }
       });      
 
-    </script>    
+      var init = function(){
+      	ra.auth.init('//' + window.location.host + '/_ah/api');
+      }
+    </script>
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>   
 {% endblock %}

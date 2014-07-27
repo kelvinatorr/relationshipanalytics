@@ -16,12 +16,33 @@ ra.hitlist.edit = ra.hitlist.edit || {};
 
 /**
  * The EateryID of the currently viewed eatery
- * @type {latitude:,longitude:}
+ * @type {int64}
  */
 ra.hitlist.edit.EATERYID;
 
 /**
 * Uses Google's geocoding api to convert the eatery's address into coordinates.
+* @param {float} latitude
+* @param {float} longitude
+*/
+ra.hitlist.edit.saveGeocode = function(latitude,longitude){
+	//Build the Request Object
+	var requestData = {};
+	requestData.latitude = latitude;
+	requestData.longitude = longitude;
+	requestData.eatery_id = ra.hitlist.edit.EATERYID;
+	gapi.client.hitlist.eateries.geocode(requestData).execute(function(resp) {
+	  alert("Boom headshot!");
+	        // if (!resp.code) {
+	        //         //Just logging to console now, you can do your check here/display message
+	        //         console.log(resp.id + ":" + resp.author + ":" + resp.message);
+	        // }
+	});
+};
+
+/**
+* Uses Google's geocoding api to convert the eatery's address into coordinates.
+* @param {string} A complete address string assembled from the input elements.
 */
 ra.hitlist.edit.googleGeocode = function(addressString) {
 	geocoder = new google.maps.Geocoder();
@@ -40,6 +61,7 @@ ra.hitlist.edit.googleGeocode = function(addressString) {
 	    // Change the value of the geocode input box.
 	    document.getElementById('coordinates').value = locationResult.lat() + "," + locationResult.lng();
 	    // Call the function that saves the coordinates to the DB.
+	    ra.hitlist.edit.saveGeocode(locationResult.lat(),locationResult.lng());
 	  }
 	  else{	    
 	    document.getElementById('geocode-error').innerHTML = "Geocode unsuccessful: " + status;
