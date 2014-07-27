@@ -239,23 +239,14 @@
         ra.hitlist.edit.EATERYID = "{{eatery.key().id()}}";
 
       	if (current_values.latitude && current_values.longitude){
-      		//alert("Yes there is one");
-      		document.getElementById('coordinates').value = current_values.latitude + "," + current_values.longitude;      	
+      		// Set the value of the coordinates input to the value of the coordinates.
+      		document.getElementById('coordinates').value = current_values.latitude + "," + current_values.longitude;
+      		// Add a marker to the google map and center it on the coordinates.
+      		ra.hitlist.edit.markAndCenterMap(current_values.latitude,current_values.longitude);
       	}
       	else{
       		// Change label of coordinates to include geocoding button
-      	 	var b = document.createElement("a");
-      	 	b.setAttribute('href',"javascript:void(0);");
-      		b.setAttribute('id','geocodeButton');
-      	 	b.setAttribute('data-toggle','tooltip')
-      	 	b.setAttribute('title','Get the latitude and longitude for the given address')
-      	 	b.innerHTML = "Geocode";
-      	 	var coordinatesLabel = document.getElementById('coordinatesLabel');
-      	 	coordinatesLabel.innerHTML = "";      	 	
-      	 	// Add click event listener to the button.      	 	
-			b.addEventListener("click", hitlistGeocodeInit, false);
-			coordinatesLabel.appendChild(b);
-      	 	$('#geocodeButton').tooltip();
+			ra.hitlist.edit.addGeocodeLink();
         }
       });
 	  
@@ -304,11 +295,19 @@
           	$(this).addClass("changed");
           	// Show changelegend
           	$('#changelegend').css("visibility","visible");
-          	//alert($(this).val() + "|" + current_values[$(this).attr('id')]);
+          	// Check if changed input is streetaddress or zipcode.
+          	var changedInputId = $(this).attr('id');
+          	if(changedInputId == 'streetaddress' || changedInputId == 'zipcode'){
+          		ra.hitlist.edit.addGeocodeLink();
+          	}
           }
           else {
           	$(this).removeClass("changed");
-          	//alert('Not the same son!');
+          	// Check if changed input is streetaddress or zipcode.
+          	var changedInputId = $(this).attr('id');
+          	if(changedInputId == 'streetaddress' || changedInputId == 'zipcode'){
+          		ra.hitlist.edit.removeGeocodeLink();
+          	}          	
           }
       });
       $('select').change(function() {
