@@ -179,6 +179,7 @@
 {% endblock %}
 {% block footer %}	
     <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
     <script type="text/javascript" src="/js/hitlist-edit.js"></script>
     <script>
       var current_values = {"name":"{{eatery.RestaurantName|safe}}"
@@ -220,7 +221,8 @@
   	  	}
   	  	var addressString = streetAddress + ' ' + city + ' ' + state + ' ' + zipCode;
   	  	// call the geocode function in hitlist-edit.js
-  	  	alert(addressString);  	  	
+  	  	alert(addressString);
+  	  	ra.hitlist.edit.googleGeocode(addressString);
   	  };
 
       $(document).ready(function(){

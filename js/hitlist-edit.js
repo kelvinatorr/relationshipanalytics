@@ -24,13 +24,22 @@ ra.hitlist.edit.EATERYID;
 * Uses Google's geocoding api to convert the eatery's address into coordinates.
 */
 ra.hitlist.edit.googleGeocode = function(addressString) {
+	geocoder = new google.maps.Geocoder();
 	geocoder.geocode( { 'address': addressString}, function(results, status) {
 	  if(status == google.maps.GeocoderStatus.OK){   
-	    var locationResult = results[0]['geometry']['location'];	    
+	    var locationResult = results[0]['geometry']['location'];
+	    // Add marker to the displayed google map.	    
 	    var n = document.createElement("google-map-marker");
 	    n.setAttribute('latitude',locationResult.lat());
 	    n.setAttribute('longitude',locationResult.lng());
-	    document.querySelector('google-map').appendChild(n);
+	    var gmap = document.querySelector('google-map');
+	    gmap.appendChild(n);
+	    // Move the focus of the map to the marker.
+	    gmap.setAttribute('latitude',locationResult.lat());
+	    gmap.setAttribute('longitude',locationResult.lng());
+	    // Change the value of the geocode input box.
+	    document.getElementById('coordinates').value = locationResult.lat() + "," + locationResult.lng();
+	    // Call the function that saves the coordinates to the DB.
 	  }
 	  else{
 	    alert("Geocode unsuccessful: " + status);
