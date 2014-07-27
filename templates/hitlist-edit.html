@@ -134,6 +134,7 @@
 			    <div class="col-sm-4">
 			      <input type="text" class="form-control" id="coordinates" value="" title="These coordinates are used to map this eatery and are from Google's geocoding api." disabled>
 			    </div>
+			    <p class="errorMessage" id="geocode-error"></p>
 			  </div>
 			  <div class="form-group additional-field hide">
 			    <label for="yelpbusinessid" class="col-sm-2 control-label">Yelp Business ID</label>
@@ -161,7 +162,8 @@
 </div> <!-- /.container -->
 {% endblock %}
 {% block footer %}	
-    <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>    
+    <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+    <script type="text/javascript" src="/js/hitlist-edit.js"></script>
     <script>
       var current_values = {"name":"{{eatery.RestaurantName|safe}}"
         					,"cuisinetype":"{{eatery.CuisineType}}"
@@ -179,8 +181,36 @@
         					,"latitude": "{{eatery.Latitude if eatery.Latitude != None}}"
         					,"longitude": "{{eatery.Longitude if eatery.Longitude != None}}"
   	  					};
+
+  	  var hitlistGeocodeInit = function (){
+  	  	// Form the complete address string.
+  	  	var streetAddress = document.getElementById("streetaddress").value.trim();  	  	
+  	  	if (!streetAddress){
+  	  		document.getElementById('geocode-error').innerHTML = "A street address is required to geocode.";
+  	  		return false;
+  	  	}
+  	  	else{
+  	  		document.getElementById('geocode-error').innerHTML = "";
+  	  	}
+  	  	var city = document.getElementById("city").value.trim();
+  	  	var state = document.getElementById("state").value.trim();
+  	  	var zipCode = document.getElementById("zipcode").value.trim();  	  	
+  	  	if (!zipCode || isNaN(zipCode) || zipCode <= 9999){
+  	  		document.getElementById('geocode-error').innerHTML = "A valid zip code is required to geocode.";
+  	  		return false;
+  	  	}
+  	  	else{
+  	  		document.getElementById('geocode-error').innerHTML = "";
+  	  	}
+  	  	var addressString = streetAddress + ' ' + city + ' ' + state + ' ' + zipCode;
+  	  	// call the geocode function in hitlist-edit.js
+  	  	alert(addressString);  	  	
+  	  };
+
       $(document).ready(function(){
-        
+        // Initialize the hitlist-edit global variable.
+        ra.hitlist.edit.EATERYID = "{{eatery.key().id()}}";
+
       	if (current_values.latitude && current_values.longitude){
       		//alert("Yes there is one");
       		document.getElementById('coordinates').value = current_values.latitude + "," + current_values.longitude;      	
@@ -194,8 +224,10 @@
       	 	b.setAttribute('title','Get the latitude and longitude for the given address')
       	 	b.innerHTML = "Geocode";
       	 	var coordinateLabel = document.getElementById('coordinatesLabel');
-      	 	coordinateLabel.innerHTML = "";
-      	 	coordinateLabel.appendChild(b);
+      	 	coordinateLabel.innerHTML = "";      	 	
+      	 	// Add click event listener to the button.      	 	
+			b.addEventListener("click", hitlistGeocodeInit, false);
+			coordinateLabel.appendChild(b);
       	 	$('#geocodeButton').tooltip();
         }
       });
@@ -273,7 +305,7 @@
         else {
         	$(this).removeClass("changed");          	
         }
-      });   	
-      
-    </script>
+      });      
+
+    </script>    
 {% endblock %}
