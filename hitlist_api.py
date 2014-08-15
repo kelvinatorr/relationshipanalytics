@@ -109,20 +109,16 @@ class HelloWorldApi(remote.Service):
             raise endpoints.UnauthorizedException("Please sign in.")
         elif status_code == -1:
             return EateryLocation(status_code=-1)
-        hitlist_key = "Hitlist|" + str(couple_key.key().id())
-        # Get a list of Entity keys that are associated with this user.
-        hitlist_keys = ra_memcache.hitlist_cache(hitlist_key,couple_key)
-        geocoded_hitlist = []
-        for e_key in hitlist_keys:
-            key = 'Eatery|' + str(e_key.id())
-            # Get the eatery entity from memcache and check if it has been geocoded.
-            e = ra_memcache.cache_entity(key,e_key.id(),couple_key,Eatery.by_id)
-            if e.Latitude and e.Longitude:
-                # Form the EateryLocation Message.
-                e_message = EateryLocation(restaurant_name=e.RestaurantName,latitude=e.Latitude
-                                ,longitude=e.Longitude,geocoded=True,status_code=status_code) 
-                geocoded_hitlist.append(e_message)
-        return EateryLocationCollection(items=geocoded_hitlist)
+        geocoded_hitlist_key = "GeocodedHitlist|" + str(couple_key.key().id())
+        # Get a list of Entity keys that are associated with this user and have been geocoded.        
+        geocoded_hitlist = ra_memcache.geocoded_hitlist_cache(geocoded_hitlist_key,couple_key)
+        # List of response messages.
+        items = []
+        for e in geocoded_hitlist:
+            # Initialize the EateryMessage            
+            e_message = EateryLocation(restaurant_name=e.RestaurantName,latitude=e.Latitude,longitude=e.Longitude,geocoded=True,status_code=status_code)
+            items.append(e_message)
+        return EateryLocationCollection(items=items)
 
     @endpoints.method(EateryLocation,EateryLocation,path='eatery_geocode',http_method='POST',name='eateries.geocode')
     def eatery_geocode_insert(self,request):
