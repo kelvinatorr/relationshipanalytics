@@ -53,10 +53,10 @@ class Couple(db.Model):
 
     @classmethod
     def by_email(cls,email,parent_key=None,keys_only=False):
-        couple = cls.all().filter('P1Email =', email).get()
+        couple = cls.all(keys_only=keys_only).filter('P1Email =', email).get()
         if not couple:
             # Try P2
-            couple = cls.all().filter('P2Email =', email).get()
+            couple = cls.all(keys_only=keys_only).filter('P2Email =', email).get()
         return couple
 
 class Trip(db.Model):
