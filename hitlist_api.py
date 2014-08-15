@@ -135,6 +135,8 @@ class HelloWorldApi(remote.Service):
             eatery.put()
             # Refresh memcache
             eatery = ra_memcache.cache_entity(key,request.eatery_id,couple_key,Eatery.by_id,update=True)
+            geocoded_hitlist_key = "GeocodedHitlist|" + str(couple_key.key().id())            
+            geocoded_hitlist = ra_memcache.geocoded_hitlist_cache(geocoded_hitlist_key,couple_key,update=True)
         else:
             return EateryLocation(status_code=-2)
         return EateryLocation(status_code=0)
