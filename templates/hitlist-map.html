@@ -1,0 +1,42 @@
+{% extends "dashboard-base.html" %}
+{% block tophead %}
+<script src="/bower_components/platform/platform.js"></script>
+<link rel="import" href="/bower_components/google-map/google-map.html">
+{% endblock %}
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>	
+    
+    <style type="text/css">
+      #map-column {
+         height: 500px;
+         margin: 0;
+      }
+
+       google-map {
+        display: block;
+        height: 100%;
+        margin: -10px;
+      }
+    </style>
+{% endblock %}
+{% block content %}
+<br/>
+<div class="container">
+  <div class="row">      
+      <div class="col-md-12" id="map-column">      
+      <google-map id="gmap" latitude="36.1215" longitude="-115.1739" zoom="14">
+        </google-map>
+      </div>
+    </div>
+</div> <!-- /.container -->
+{% endblock %}
+{% block footer %}
+    <script type="text/javascript" src="/js/ra-auth.js"></script>
+    <script>
+      var init = function(){
+        ra.auth.init('//' + window.location.host + '/_ah/api');
+      }
+    </script>   
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>   
+{% endblock %}

@@ -480,6 +480,16 @@ class InitializeTrips(BaseHandler):
             ra_memcache.cache_entity(key=key,query_key=location_id,
                         parent_key=parent,entity_query_function=models.Trip.by_location_id,update=True)
 
+class MapHitlist(BaseHandler):
+    def get(self):
+        key = "Couple_Key|" + self.user.user_id()
+        couple_key = ra_memcache.cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
+        if couple_key:
+            self.render('hitlist-map.html')
+        else:
+            self.redirect('/')
+
+
             
 
 
@@ -559,6 +569,7 @@ application = webapp2.WSGIApplication([
    ,('/register',Register)
    ,('/confirm',Confirm)
    ,('/edit',EditHitlist)
+   ,('/map',MapHitlist)
    ,('/initializetrips',InitializeTrips)
    ,('/test',Test)
 ], debug=True)
