@@ -32,6 +32,7 @@ handlers:
 
 - url: /bower_components
   static_dir: bower_components
+  expiration: "12h"
 
 - url: /blobstore.*
   script: blobstore.app
