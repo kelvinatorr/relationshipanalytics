@@ -31,17 +31,6 @@ ra.auth.signedIN = false;
 
 
 /**
-* Loads the application UI after the user has complted auth.
-*/
-ra.auth.userAuthed = function() {
-  var request = gapi.client.oauth2.userinfo.get().execute(function(resp){
-    if(!resp.code){
-      ra.auth.signedIN = true;      
-    }
-  });
-};
-
-/**
  * Handles the auth flow, with the given value for immediate mode.
  * @param {boolean} mode Whether or not to use immediate mode.
  * @param {Function} callback Callback to call on completion.
@@ -49,35 +38,31 @@ ra.auth.userAuthed = function() {
 ra.auth.signin = function(mode, callback) {
   gapi.auth.authorize({client_id: ra.auth.CLIENT_ID,
       scope: ra.auth.SCOPES, immediate: mode},
-      callback);
+      function(){
+        var request = gapi.client.oauth2.userinfo.get().execute(function(resp){
+          if(!resp.code){
+            ra.auth.signedIN = true;
+            console.log("userAuthed is done.");
+            if (callback != undefined) {
+              callback();
+            }
+          }
+        });
+      });
 };
-
-/**
- * Presents the user with the authorization popup.
- */
-ra.auth.auth = function() {
-  if (!ra.auth.signedIn) {
-    ra.auth.signin(false,
-        ra.auth.userAuthed);
-  } else {
-  	alert('you are signed in');
-  }
-};
-
 
 /**
  * Initializes the application.
  * @param {string} apiRoot Root of the API's path.
  */
-ra.auth.init = function(apiRoot) {
+ra.auth.init = function(apiRoot,pageCallback) {
   // Loads the OAuth and helloworld APIs asynchronously, and triggers login
   // when they have completed.
   var apisToLoad;
   var callback = function() {
-    if (--apisToLoad == 0) {
-      //ra.auth.enableButtons();
+    if (--apisToLoad == 0) {      
       ra.auth.signin(true,
-          ra.auth.userAuthed);
+          pageCallback);      
     }
   }
 
