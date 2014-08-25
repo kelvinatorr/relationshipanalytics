@@ -3,10 +3,7 @@
 <script src="/bower_components/platform/platform.js"></script>
 <link rel="import" href="/bower_components/google-map/google-map.html">
 {% endblock %}
-{% block head %}
-	<link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
-	<link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>	
-    
+{% block head %}   
     <style type="text/css">
       #map-column {
          height: 550px;
@@ -39,7 +36,7 @@
       };
       var init = function(){
         ra.auth.init('//' + window.location.host + '/_ah/api',testCallback);
-      }
+      };
     </script>   
     <script src="https://apis.google.com/js/client.js?onload=init"></script>   
 {% endblock %}
