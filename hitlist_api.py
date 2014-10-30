@@ -69,7 +69,6 @@ class HelloWorldApi(remote.Service):
                 ,longitude=e.Longitude,geocoded=geocoded,status_code=status_code)         
             return e_message
         else:
-            print "Hello"
             raise endpoints.NotFoundException('Eatery %s not found.' % request.id)
 
     @endpoints.method(message_types.VoidMessage, EateryLocationCollection, path='eaterieslocation', http_method='GET',
