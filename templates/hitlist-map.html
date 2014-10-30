@@ -33,6 +33,7 @@
     <script>
       var testCallback = function() {
         console.log("testCallback has been called.");
+        ra.hitlist.mapping.loadTest();
       };
       var init = function(){
         ra.auth.init('//' + window.location.host + '/_ah/api',testCallback);
