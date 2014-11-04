@@ -40,6 +40,12 @@ ra.hitlist.map.geoLocateUserSuccess = function(position){
     var n = document.createElement("google-map-marker");
     n.setAttribute('latitude',position.coords.latitude);
     n.setAttribute('longitude',position.coords.longitude);
+    // Set title for when user hovers over the marker
+    n.setAttribute('title', 'This is where you are');
+    // Set a h3 tag as a child of the marker so it shows up when they click on it.
+    var popup = document.createElement("h4");
+    popup.innerHTML = "Current Location";
+    n.appendChild(popup);
     document.querySelector('google-map').appendChild(n);
 };
 
@@ -113,8 +119,11 @@ ra.hitlist.map.addMapMarkers = function() {
             n.setAttribute('latitude',tenClosest[i].latitude);
             n.setAttribute('longitude',tenClosest[i].longitude);
             // Set the title of the marker
-            n.setAttribute('title', 'Hi Kelvin');
+            n.setAttribute('title', tenClosest[i].restaurant_name);            
             // Set a h3 tag as a child of the marker so it shows up when they click on it.
+            var popup = document.createElement("h4");
+            popup.innerHTML = tenClosest[i].restaurant_name;
+            n.appendChild(popup);
             document.querySelector('google-map').appendChild(n);
         }
     });    
