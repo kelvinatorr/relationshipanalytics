@@ -15,11 +15,34 @@
         height: 100%;
         margin: -10px;
       }
+
+      .ra-btn {
+        background-color: black;
+        color: white;
+      }
     </style>
 {% endblock %}
 {% block content %}
-<br/>
-<div class="container">
+
+<div class="container" ng-app>
+  <div class="row">      
+      <div class="col-md-4">
+        <h3><a href="">Options</a></h3>
+        <form role="form" ng-show="true" novalidate name="optionsForm">          
+          <div class="form-group">
+            <label for="numberOfResults">Number of Results</label>
+            <input type="number" class="form-control" id="numberOfResults" name="numberOfResults" placeholder="Enter a number" step="1" min="1" required>
+          </div>          
+          <div class="checkbox">
+            <label>
+              <input type="checkbox"> Select 1 at Random</input>
+            </label>
+          </div>
+          <button class="btn btn-default ra-btn">Apply</button>
+        </form>
+      </div>
+  </div>
+  <br/>
   <div class="row">      
       <div class="col-md-12" id="map-column">      
       <google-map id="gmap" latitude="36.1215" longitude="-115.1739" zoom="14">
