@@ -14,7 +14,7 @@ from hitlist_api_messages import EateryLocationCollection
 from models import Eatery
 from models import Couple
 
-WEB_CLIENT_ID = '706028337645-oe249o4vs0lsm199561e6pdua98vk9ge.apps.googleusercontent.com'
+WEB_CLIENT_ID = '356591658043-r06nli81msv1s280plb91a2kjn25c02b.apps.googleusercontent.com'
 ANDROID_CLIENT_ID = 'replace this with your Android client ID'
 IOS_CLIENT_ID = 'replace this with your iOS client ID'
 ANDROID_AUDIENCE = WEB_CLIENT_ID
