@@ -1,7 +1,26 @@
 {% extends "dashboard-base.html" %}
+{% block tophead %}
+<script src="/bower_components/platform/platform.js"></script>
+<link rel="import" href="/bower_components/google-map/google-map.html">
+{% endblock %}
+{% block head %}
+	<link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
+	<link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>	
+    
+    <style type="text/css">
+      #map-column {
+         height: 300px;
+         margin: 0;
+      }
 
+       google-map {
+        display: block;
+        height: 100%;
+        margin: -10px;
+      }
+    </style>
+{% endblock %}
 {% block content %}
-
 <div class="container">
 	<div class="row">
     	<div class="col-md-8">
@@ -12,7 +31,9 @@
 			    <div class="col-sm-5">
 			      <input type="text" class="form-control" id="name" value="{{eatery.RestaurantName}}" name="restaurantName" required>	      
 			    </div>
-			    <p class="errorMessage">{{error_name}}</p>
+			    <div class="col-sm-6">
+			    	<p class="errorMessage">{{error_name}}</p>
+			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="cuisinetype" class="col-sm-2 control-label">Cuisine</label>
@@ -34,7 +55,7 @@
 			  </div>
 			  <div class="form-group">
 			    <label for="notes" class="col-sm-2 control-label">Notes</label>
-			    <div class="col-sm-10">
+			    <div class="col-sm-6">
 			      <input type="text" class="form-control" id="notes" value="{{eatery.NotesComments}}" name="notesComments">
 			    </div>
 			  </div>
@@ -57,7 +78,9 @@
 			      <input type="text" class="form-control datepicker" id="firsttripdate" pattern="^\d{1,2}/\d{1,2}/\d{4}"
 			      value="{{ eatery.FirstTripDate.strftime('%m/%d/%Y') if eatery.FirstTripDate != None }}" data-date-format="mm/dd/yyyy" name="firstTripDate">
 			    </div>
-			    <p class="errorMessage">{{error_first_trip}}</p>
+			    <div class="col-sm-6">
+			    	<p class="errorMessage">{{error_first_trip}}</p>
+			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="lastvisitdate" class="col-sm-2 control-label">Last Visit</label>
@@ -65,7 +88,9 @@
 			      <input type="text" class="form-control datepicker" id="lastvisitdate" pattern="^\d{1,2}/\d{1,2}/\d{4}"
 			      value="{{ eatery.LastVisitDate.strftime('%m/%d/%Y') if eatery.LastVisitDate != None }}" data-date-format="mm/dd/yyyy" name="lastVisitDate">
 			    </div>
-			    <p class="errorMessage">{{error_last_visit}}</p>
+			    <div class="col-sm-6">
+			    	<p class="errorMessage">{{error_last_visit}}</p>
+			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="numberoftrips" class="col-sm-2 control-label">Number of Trips</label>
@@ -73,7 +98,9 @@
 			      <input type="number" min="0" step="1" pattern="\d+" class="form-control" id="numberoftrips" 
 			      value="{{ eatery.NumberOfTrips }}" name="numberOfTrips">
 			    </div>
-			    <p class="errorMessage">{{error_number_of_trips}}</p>
+			    <div class="col-sm-6">
+			    	<p class="errorMessage">{{error_number_of_trips}}</p>
+			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="P1Rating" class="col-sm-2 control-label">{{couple.P1Nickname}}'s Rating</label>
@@ -81,7 +108,9 @@
 			      <input type="number" min="0" max="5" step="1" pattern="^\d" class="form-control" id="P1Rating" 
 			      value="{{ eatery.P1Rating }}" name="p1Rating">
 			    </div>
-			    <p class="errorMessage">{{error_p1_rating}}</p>
+			    <div class="col-sm-6">
+			    	<p class="errorMessage">{{error_p1_rating}}</p>
+			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="P2Rating" class="col-sm-2 control-label">{{couple.P2Nickname}}'s Rating</label>
@@ -89,12 +118,14 @@
 			      <input type="number" min="0" max="5" step="1" pattern="^\d" class="form-control" id="P2Rating" 
 			      value="{{ eatery.P2Rating }}" name="p2Rating">
 			    </div>
-			    <p class="errorMessage">{{error_p2_rating}}</p>
+			    <div class="col-sm-6">
+			    	<p class="errorMessage">{{error_p2_rating}}</p>
+			    </div>
 			  </div>
 			  <div class="form-group">
 			  	<label for="additionalfields" class="col-sm-2 control-label"></label>
 			  	<div class="col-sm-4">	  	
-			  		<a href="javascript:void(0);" id="additionalfields">Toggle Additional Fields</a>
+			  		<a href="javascript:void(0);" onClick="toggleFields();" id="additionalfields">Toggle Additional Fields</a>
 			  	</div>
 			  </div>
 			  <div class="form-group additional-field hide">
@@ -108,7 +139,18 @@
 			    <div class="col-sm-4">
 			      <input type="text" class="form-control" id="zipcode" pattern="^\d{5}" value="{{eatery.ZipCode if eatery.ZipCode != None}}" name="zipCode">
 			    </div>
-			    <p class="errorMessage">{{error_zip_code}}</p>
+			    <div class="col-sm-6">
+			    	<p class="errorMessage">{{error_zip_code}}</p>
+			    </div>
+			  </div>
+			  <div class="form-group additional-field hide">
+			    <label for="coordinates" class="col-sm-2 control-label" id="coordinatesLabel">Coordinates</label>
+			    <div class="col-sm-4">
+			      <input type="text" class="form-control" id="coordinates" value="" title="These coordinates are used to map this eatery and are from Google's geocoding api." disabled>
+			    </div>
+			    <div class="col-sm-6">
+			    	<p class="errorMessage" id="geocode-error"></p>
+			    </div>
 			  </div>
 			  <div class="form-group additional-field hide">
 			    <label for="yelpbusinessid" class="col-sm-2 control-label">Yelp Business ID</label>
@@ -127,15 +169,19 @@
 			</form>
 
 	    </div>
+	    <div class="col-md-4" id="map-column">
+	    <br>
+		 	<google-map id="gmap" latitude="36.1215" longitude="-115.1739" zoom="14">
+		    </google-map>
+	    </div>
 	  </div>
-</div><!-- /.container -->
+</div> <!-- /.container -->
 {% endblock %}
-{% block footer %}
-    <link rel="stylesheet" type="text/css" href="/css/hitlist-edit.css"/>
-    <link rel="stylesheet" type="text/css" href="/css/datepicker.css"/>
-    <!-- <link rel="stylesheet" type="text/css" href="/css/bootstrap-combobox.css"/> -->
-    <!--<script src="/js/bootstrap-combobox.js"></script> -->
-    <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>    
+{% block footer %}	
+    <script type="text/javascript" src="/js/bootstrap-datepicker.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp"></script>
+    <script type="text/javascript" src="/js/ra-auth.js"></script>
+    <script type="text/javascript" src="/js/hitlist-edit.js"></script>
     <script>
       var current_values = {"name":"{{eatery.RestaurantName|safe}}"
         					,"cuisinetype":"{{eatery.CuisineType}}"
@@ -147,57 +193,121 @@
         					,"numberoftrips": "{{ eatery.NumberOfTrips }}"
         					,"P1Rating": "{{ eatery.P1Rating }}"
         					,"P2Rating": "{{ eatery.P2Rating }}"
+        					,"streetaddress": "{{eatery.StreetAddress}}"
+        					,"zipcode": "{{eatery.ZipCode}}"
+        					,"yelpbusinessid": "{{eatery.YelpBusinessID}}"
+        					,"latitude": "{{eatery.Latitude if eatery.Latitude != None}}"
+        					,"longitude": "{{eatery.Longitude if eatery.Longitude != None}}"
   	  					};
-      $(document).ready(function(){
-              
-        $('.datepicker').datepicker()
-        .on('changeDate', function(ev){
-        if ($(this).val() != current_values[$(this).attr('id')]){
-          	$(this).addClass("changed");
-          	// Show changelegend
-          	$('#changelegend').css("visibility","visible");          	
-          }
-          else {
-          	$(this).removeClass("changed");          	
-          }
-        });
-        // Activate correct header on navigation panel.
-        $('#nav_hitlist').addClass('active');
-        // Controllers for additional field toggling.
-        var $button = $('#additionalfields');
-  		var $addfields = $('.additional-field');
-  		var visible = false;
-        $button.click(function() {            
-            if (visible){
-            	$addfields.slideUp('fast',function(){
-            	  $addfields.addClass('hide')
-            	       .slideDown(0);
-            	});
-            }
-            else{
-            	$addfields.slideUp(0,function(){
-            	  $addfields.removeClass('hide')
-            	       .slideDown('fast');
-            	});
-            }
-            visible = ! visible;
-            // Return False to prevent from following link.
-            return false;
-          });
 
+  	  // Inform the user that a geocoding error has occured.
+  	  var informGeocodeError = function(message){
+  	  	geocodeError = document.getElementById('geocode-error');
+  	  	geocodeError.innerHTML = message;
+  	  	// Make the text red.
+  	  	geocodeError.classList.toggle('errorMessage',true);
+  	  	geocodeError.classList.toggle('dbMessage',false);
+  	  };
+
+  	  var hitlistGeocodeInit = function (){  	  	
+  	  	// Form the complete address string.
+  	  	var streetAddress = document.getElementById("streetaddress").value.trim();  	  	
+  	  	if (!streetAddress){
+  	  		informGeocodeError("A street address is required to geocode."); 	  		
+  	  		return false;
+  	  	}
+  	  	else{
+  	  		document.getElementById('geocode-error').innerHTML = "";
+  	  	}
+  	  	var city = document.getElementById("city").value.trim();
+  	  	var state = document.getElementById("state").value.trim();
+  	  	var zipCode = document.getElementById("zipcode").value.trim();  	  	
+  	  	if (!zipCode || isNaN(zipCode) || zipCode <= 9999){  	  		
+  	  		informGeocodeError("A valid zip code is required to geocode.");
+  	  		return false;
+  	  	}
+  	  	else{
+  	  		document.getElementById('geocode-error').innerHTML = "";
+  	  	}
+  	  	var addressString = streetAddress + ' ' + city + ' ' + state + ' ' + zipCode;
+  	  	// Call the geocode function in hitlist-edit.js  	  	
+  	  	ra.hitlist.edit.googleGeocode(addressString);
+  	  };
+
+      $(document).ready(function(){
+        // Initialize the hitlist-edit global variable.
+        ra.hitlist.edit.EATERYID = "{{eatery.key().id()}}";
+
+      	if (current_values.latitude && current_values.longitude){
+      		// Set the value of the coordinates input to the value of the coordinates.
+      		document.getElementById('coordinates').value = current_values.latitude + "," + current_values.longitude;
+      		// Add a marker to the google map and center it on the coordinates.
+      		ra.hitlist.edit.markAndCenterMap(current_values.latitude,current_values.longitude);
+      	}
+      	else{
+      		// Change label of coordinates to include geocoding button
+			ra.hitlist.edit.addGeocodeLink();
+        }
       });
-      // Indicate changed field.
+	  
       
+      // Controllers for additional field toggling.
+	  var visible = false;
+	  function toggleFields(){
+	  	var hiddenInputs = document.getElementsByClassName('additional-field');
+	  	var i =  hiddenInputs.length;
+	  	var $addfields = $('.additional-field');
+	  	if (visible){
+	  		while(i--) {
+        		hiddenInputs[i].classList.add('hide');
+    		}
+    		// Placed here because of stupid Firefox bug.
+    		visible = ! visible;
+           	$addfields.slideUp('fast',function(){
+          	  if (!$addfields.hasClass('hide')){
+          	  	$addfields.addClass('hide');
+          	  }
+           	    $addfields.slideDown(0);
+           	});            	
+        }
+        else{
+         	while(i--) {
+        		hiddenInputs[i].classList.remove('hide');
+    		}
+    		// Placed here because of stupid Firefox bug.
+    		visible = ! visible;
+           	$addfields.slideUp(0,function(){
+           	  if ($addfields.hasClass('hide')){
+           	  	$addfields.removeClass('hide');
+           	  }
+           	  	$addfields.slideDown('fast');
+           	});        		
+        }        
+        // Return False to prevent from following link.
+        return false;
+	  }
+	  // Activate correct header on navigation panel.	    
+	  var navElement = document.getElementById("nav_hitlist");
+	  navElement.classList.add("active");
+      // Indicate changed field.      
       $('input').bind('input', function() {
           if ($(this).val() != current_values[$(this).attr('id')]){
           	$(this).addClass("changed");
           	// Show changelegend
           	$('#changelegend').css("visibility","visible");
-          	//alert($(this).val() + "|" + current_values[$(this).attr('id')]);
+          	// Check if changed input is streetaddress or zipcode.
+          	var changedInputId = $(this).attr('id');
+          	if(changedInputId == 'streetaddress' || changedInputId == 'zipcode'){
+          		ra.hitlist.edit.addGeocodeLink();
+          	}
           }
           else {
           	$(this).removeClass("changed");
-          	//alert('Not the same son!');
+          	// Check if changed input is streetaddress or zipcode.
+          	var changedInputId = $(this).attr('id');
+          	if(changedInputId == 'streetaddress' || changedInputId == 'zipcode'){
+          		ra.hitlist.edit.removeGeocodeLink();
+          	}          	
           }
       });
       $('select').change(function() {
@@ -210,5 +320,22 @@
         	$('#changelegend').css("visibility","hidden");
         }                
       });
+      
+      $('.datepicker').datepicker()
+      .on('changeDate', function(ev){
+      if ($(this).val() != current_values[$(this).attr('id')]){
+        	$(this).addClass("changed");
+        	// Show changelegend
+        	$('#changelegend').css("visibility","visible");          	
+        }
+        else {
+        	$(this).removeClass("changed");          	
+        }
+      });      
+
+      var init = function(){
+      	ra.auth.init('//' + window.location.host + '/_ah/api');
+      }
     </script>
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>   
 {% endblock %}

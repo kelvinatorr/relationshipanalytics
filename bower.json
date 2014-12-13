@@ -1,0 +1,21 @@
+{
+  "name": "relationshipanalytics",
+  "version": "0.0.0",
+  "homepage": "https://github.com/kelvinatorr/relationshipanalytics",
+  "authors": [
+    "Kelvin Dealca <kelvin.dealca@gmail.com>"
+  ],
+  "description": "website to track relationship data",
+  "main": "relationshipanalytics.py",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "google-map": "PolymerLabs/google-map#~0.3.0"
+  }
+}

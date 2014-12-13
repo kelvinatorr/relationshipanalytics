@@ -1,67 +1,87 @@
-
-
 <!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="initial-scale=1.0">
     <meta charset="utf-8">
-    <title>Geocoding service</title>
-    <style>
-      html, body, #map-canvas {
-        height: 100%;
-        margin: 0px;
-        padding: 0px
-      }
-      #panel {
-        position: absolute;
-        top: 5px;
-        left: 50%;
-        margin-left: -180px;
-        z-index: 5;
-        background-color: #fff;
-        padding: 5px;
-        border: 1px solid #999;
-      }
-    </style>
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false"></script>
+    <title>POST API Test</title>
     <script>
-var geocoder;
-var map;
-function initialize() {
-  geocoder = new google.maps.Geocoder();
-  var latlng = new google.maps.LatLng(-34.397, 150.644);
-  var mapOptions = {
-    zoom: 8,
-    center: latlng
-  }
-  map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-}
+      function insertGeocode(){
+        alert("I want to eat pepe");
+        var latitude = document.getElementById('latitude').innerHTML;
+        var longitude = document.getElementById('longitude').innerHTML;
+        var eateryID = document.getElementById('eateryID').innerHTML;
+        //Build the Request Object
+        var requestData = {};
+        requestData.latitude = latitude;
+        requestData.longitude = longitude;
+        requestData.eatery_id = eateryID;
+        gapi.client.hitlist.eateries.geocode(requestData).execute(function(resp) {
+          alert("Boom headshot!");
+                // if (!resp.code) {
+                //         //Just logging to console now, you can do your check here/display message
+                //         console.log(resp.id + ":" + resp.author + ":" + resp.message);
+                // }
+        });
+      }
+      /**
+      * Whether or not the user is signed in.
+      * @type (boolean)
+      */
+      signedIN = false;
+      CLIENT_ID = '706028337645-oe249o4vs0lsm199561e6pdua98vk9ge.apps.googleusercontent.com';
+      SCOPES = 'https://www.googleapis.com/auth/userinfo.email';
+      /**
+      * Loads the application UI after the user has complted auth.
+      */
+      userAuthed = function() {
+        var request = gapi.client.oauth2.userinfo.get().execute(function(resp){
+          if(!resp.code){
+            signedIN = true;      
+          }
+        });
+      };
 
-function codeAddress() {
-  var address = document.getElementById('address').value;
-  geocoder.geocode( { 'address': address}, function(results, status) {
-    if (status == google.maps.GeocoderStatus.OK) {
-      map.setCenter(results[0].geometry.location);
-      var marker = new google.maps.Marker({
-          map: map,
-          position: results[0].geometry.location
-      });
-    } else {
-      alert('Geocode was not successful for the following reason: ' + status);
-    }
-  });
-}
+      /**
+       * Handles the auth flow, with the given value for immediate mode.
+       * @param {boolean} mode Whether or not to use immediate mode.
+       * @param {Function} callback Callback to call on completion.
+       */
+      signin = function(mode, callback) {
+        gapi.auth.authorize({client_id: CLIENT_ID,
+            scope: SCOPES, immediate: mode},
+            callback);
+      };
 
-google.maps.event.addDomListener(window, 'load', initialize);
+      function init() {
+        // Loads the OAuth and helloworld APIs asynchronously, and triggers login
+        // when they have completed.
+        alert('Init running!');
+        var apisToLoad;
+        var callback = function() {
+          if (--apisToLoad == 0) {
+            //ra.hitlist.enableButtons();
+            document.getElementById('postIT').onclick = function() {
+                insertGeocode();
+              }
+            signin(true,userAuthed);
+          }
+        }
+
+        apisToLoad = 2; // must match number of calls to gapi.client.load()
+        gapi.client.load('hitlist', 'v1', callback, '//' + window.location.host + '/_ah/api');
+        gapi.client.load('oauth2', 'v2', callback); 
+        
+                        
+      }
 
     </script>
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>
   </head>
   <body>
-    <div id="panel">
-      <input id="address" type="textbox" value="Sydney, NSW">
-      <input type="button" value="Geocode" onclick="codeAddress()">
-    </div>
-    <div id="map-canvas"></div>
+    <p id="latitude">36.126780</p>
+    <p id="longitude">-115.201359</p>
+    <p id="eateryID">4573968371548160</p>
+    <a href="javascript:void(0);" id="postIT">POST IT</a>
   </body>
 </html>
 

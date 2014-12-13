@@ -1,0 +1,70 @@
+{% extends "dashboard-base.html" %}
+{% block tophead %}
+<script src="/bower_components/platform/platform.js"></script>
+<link rel="import" href="/bower_components/google-map/google-map.html">
+{% endblock %}
+{% block head %}   
+    <style type="text/css">
+      #map-column {
+         height: 550px;
+         margin: 0;
+      }
+
+       google-map {
+        display: block;
+        height: 100%;
+        margin: -10px;
+      }
+
+      .ra-btn {
+        background-color: black;
+        color: white;
+      }
+    </style>
+{% endblock %}
+{% block content %}
+
+<div class="container" ng-app>
+  <div class="row">      
+      <div class="col-md-4">
+        <h3><a href="">Options</a></h3>
+        <form role="form" ng-show="true" novalidate name="optionsForm">          
+          <div class="form-group">
+            <label for="numberOfResults">Number of Results</label>
+            <input type="number" class="form-control" id="numberOfResults" name="numberOfResults" placeholder="Enter a number" step="1" min="1" required>
+          </div>          
+          <div class="checkbox">
+            <label>
+              <input type="checkbox"> Select 1 at Random</input>
+            </label>
+          </div>
+          <button class="btn btn-default ra-btn">Apply</button>
+        </form>
+      </div>
+  </div>
+  <br/>
+  <div class="row">      
+      <div class="col-md-12" id="map-column">      
+      <google-map id="gmap" latitude="36.1215" longitude="-115.1739" zoom="14">
+        <!-- <google-map-marker latitude="37.779" longitude="-122.3892">
+          <p>Helooo</p>
+        </google-map-marker> -->
+        </google-map>
+      </div>
+    </div>
+</div> <!-- /.container -->
+{% endblock %}
+{% block footer %}
+    <script type="text/javascript" src="/js/ra-auth.js"></script>
+    <script>
+      var testCallback = function() {
+        console.log("testCallback has been called.");
+        ra.hitlist.map.initialize();
+      };
+      var init = function(){
+        ra.auth.init('//' + window.location.host + '/_ah/api',testCallback);
+      };
+    </script>   
+    <script src="https://apis.google.com/js/client.js?onload=init"></script>   
+    <script type="text/javascript" src="/js/hitlist-mapping/hitlist-mapping-main.js"></script>
+{% endblock %}
