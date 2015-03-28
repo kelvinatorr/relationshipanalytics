@@ -15,7 +15,7 @@ ra.hitlist = ra.hitlist || {};
  * @type {string}
  */
 ra.hitlist.CLIENT_ID =
-    '706028337645-oe249o4vs0lsm199561e6pdua98vk9ge.apps.googleusercontent.com';
+    '356591658043-vpfvi9qo72fo6jb7jb2vgh9b2r1dlfhc.apps.googleusercontent.com';
 
 /**
  * Scopes used by the application.
