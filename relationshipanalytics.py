@@ -14,6 +14,7 @@ from google.appengine.ext.webapp import blobstore_handlers
 # Custom modules.
 import ra_memcache
 import models
+import helpers
 
 template_dir = os.path.join(os.path.dirname(__file__), 'templates')
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
@@ -57,13 +58,46 @@ class Upload(BaseHandler,blobstore_handlers.BlobstoreUploadHandler):
         # Get the current user's Couple entity to set it as a ancestor for each entry in the csv.Dialect
         key = "Couple_Key|" + self.user.user_id()
         couple_key = ra_memcache.cache_entity(key,self.user.user_id(),None,models.Couple.by_user_id,keys_only=True)
-        process_csv(blob_info,couple_key)
+        self.process_csv(blob_info,couple_key)
         # Delete file after import
         blobstore.delete(blob_info.key())
         # Update Couple hitlist
         hitlist_key = "Hitlist|" + str(couple_key.id())
-        ra_memcache.hitlist_cache(hitlist_key,couple_key,update=True) 
+        ra_memcache.hitlist_cache(hitlist_key,couple_key,update=True)
         self.redirect("/")
+
+
+    def process_csv(self,blob_info,couple_key):
+        blob_reader = blobstore.BlobReader(blob_info.key())
+        reader = csv.reader(blob_reader, delimiter=',', quotechar='"')
+        for row in reader:
+            city_state = row[2].split(',')
+            if row[11] == '':
+                average_rating = None
+            else:
+                average_rating = float(row[11])
+
+            r = dict(RestaurantName = row[0]
+                        ,CuisineType = row[1]
+                        ,City = city_state[0].strip()
+                        ,State = city_state[1].strip()
+                        ,NotesComments = row[3]
+                        ,Completed = bool(int(row[4]))
+                        ,FirstTripDate = helpers.convert_string_to_date(row[5])
+                        ,LastVisitDate = helpers.convert_string_to_date(row[6])
+                        ,NumberOfTrips = helpers.int_or_null(row[7])
+                        ,DaysSinceLastTrip = helpers.int_or_null(row[8])
+                        ,P1Rating = helpers.int_or_null(row[9])
+                        ,P2Rating = helpers.int_or_null(row[10])
+                        ,AverageRating = average_rating
+                        ,parent=couple_key
+                        )        
+            entry = models.Eatery(**r)
+            entry.put()
+            entry_id = entry.key().id()
+            key = "Eatery|" + str(entry_id)
+            # Add Eatery entry to memcache.
+            ra_memcache.cache_entity(key,entry_id,couple_key,models.Eatery.by_id,update=True)
 
 class Register(BaseHandler):
     def get(self):
@@ -73,7 +107,7 @@ class Register(BaseHandler):
         invite_email = self.request.get('invite_email')
 
         failed = False
-        if not valid_username('username',invite_email):
+        if not helpers.valid_username('username',invite_email):
             failed = True
             error_invite_email = 'Please enter a valid gmail address, including "@gmail.com"'
 
@@ -240,7 +274,7 @@ class EditHitlist(BaseHandler):
                         first_trip_date = self.request.get("firstTripDate")
                         # Check if a value was entered first.
                         if first_trip_date:
-                            first_trip_date = convert_string_to_date(first_trip_date)
+                            first_trip_date = helpers.convert_string_to_date(first_trip_date)
                             if not first_trip_date:
                                 failed = True
                                 error_first_trip = "Invalid date format."
@@ -251,7 +285,7 @@ class EditHitlist(BaseHandler):
                         last_visit_date = self.request.get("lastVisitDate")
                         # Check if a value was entered first.
                         if last_visit_date:
-                            last_visit_date = convert_string_to_date(last_visit_date)
+                            last_visit_date = helpers.convert_string_to_date(last_visit_date)
                             if not last_visit_date:
                                 failed = True
                                 error_last_visit = "Invalid date format."
@@ -500,68 +534,6 @@ class App(BaseHandler):
         self.render("index2.html")
 
 
-# helper functions
-valid_dict = {'username':r"^[\S]+@gmail\.[\S]+$" 
-              ,'password':r"^.{6,20}$"          
-              }
-
-def valid_username(string_type,target_string):
-    regex = re.compile(valid_dict[string_type])
-    return regex.match(target_string)
-
-def convert_string_to_date(dateString):
-    """
-    Converts string date time to Python date object by trying multiple
-    formats. Returns None if conversion failed
-    """
-    test_cases = ['%m/%d/%Y','%m/%d/%y', '%Y-%m-%d']
-    res = None
-    for f in test_cases:
-        try:
-            res = datetime.datetime.strptime(dateString, f).date()
-            return res
-        except:
-            pass
-    return res
-
-def process_csv(blob_info,couple_key):
-    blob_reader = blobstore.BlobReader(blob_info.key())
-    reader = csv.reader(blob_reader, delimiter=',', quotechar='"')
-    for row in reader:
-        city_state = row[2].split(',')
-        if row[11] == '':
-            average_rating = None
-        else:
-            average_rating = float(row[11])
-
-    	r = dict(RestaurantName = row[0]
-					,CuisineType = row[1]
-					,City = city_state[0].strip()
-					,State = city_state[1].strip()
-					,NotesComments = row[3]
-					,Completed = bool(int(row[4]))
-					,FirstTripDate = convert_string_to_date(row[5])
-					,LastVisitDate = convert_string_to_date(row[6])
-					,NumberOfTrips = int_or_null(row[7])
-					,DaysSinceLastTrip = int_or_null(row[8])
-					,P1Rating = int_or_null(row[9])
-					,P2Rating = int_or_null(row[10])
-					,AverageRating = average_rating
-                    ,parent=couple_key
-    				)        
-        entry = models.Eatery(**r)
-        entry.put()
-        entry_id = entry.key().id()
-        key = "Eatery|" + str(entry_id)
-        # Add Eatery entry to memcache.
-        ra_memcache.cache_entity(key,entry_id,couple_key,models.Eatery.by_id,update=True)
-
-
-def int_or_null(data):
-    if data != '':
-        return int(data)
-    else:
-        return None
 
 #url handlers
 
