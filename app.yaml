@@ -41,6 +41,6 @@ handlers:
   script: hitlist_api.APPLICATION
 
 - url: /.*
-  script: relationshipanalytics.application
+  script: main.application
   secure: always
   login: required
