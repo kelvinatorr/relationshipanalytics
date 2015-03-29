@@ -490,12 +490,14 @@ class MapHitlist(BaseHandler):
             self.redirect('/')
 
 
-            
-
-
 class Test(BaseHandler):
     def get(self):
         self.render('testmap.html')
+
+
+class App(BaseHandler):
+    def get(self):
+        self.render("index2.html")
 
 
 # helper functions
@@ -572,4 +574,5 @@ application = webapp2.WSGIApplication([
    ,('/map',MapHitlist)
    ,('/initializetrips',InitializeTrips)
    ,('/test',Test)
+   ,('/app', App)
 ], debug=True)
