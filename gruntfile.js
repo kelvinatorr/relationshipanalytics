@@ -16,7 +16,7 @@ module.exports = function(grunt) {
                         //expand: true,     // Enable dynamic expansion.
                         //cwd: 'js/mysma/',      // Src matches are relative to this path.
                         src: ['js/app/**/*.js'], // Actual pattern(s) to match.
-                        dest: 'build/js/appconcat.js'   // Destination path prefix.
+                        dest: 'build/js/app.concat.js'   // Destination path prefix.
                         //ext: '.huh.js'   // Dest filepaths will have this extension.
                     }
                 ]
