@@ -25,4 +25,17 @@
         $log.debug("starterApp + ngMaterial running kelvin...");
     }]);
 
+    var RandomController = function($mdSidenav, $mdBottomSheet, $log, $q) {
+        $log.debug("Hi kelvin");
+        console.log($q);
+
+    };
+
+    app.controller("RandomController", [
+        '$mdSidenav', '$mdBottomSheet', '$log','$q',
+        RandomController
+    ]);
+
+
+
 })();

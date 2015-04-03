@@ -13,6 +13,7 @@ md-list .md-button {
     width: 100%;
 }
 
+/*This makes the menu item wider*/
 .avatar {
     position: relative;
     width: 128px;
@@ -35,7 +36,7 @@ md-toolbar h1 {
     font-weight: 400;
 }
 
-/*The menu hamburger*/
+/*The class attached to the menu hamburger*/
 .menu {
     background-color: transparent;
     border: none;
@@ -44,6 +45,7 @@ md-toolbar h1 {
     width: 36px;
 }
 
+/*This centers the tool bar h1*/
 md-toolbar h1 {
     margin: auto;
 }

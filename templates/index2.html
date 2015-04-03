@@ -20,10 +20,10 @@
     "factory"),service:a("$provide","service"),value:a("$provide","value"),constant:a("$provide","constant","unshift"),animation:a("$animateProvider","register"),filter:a("$filterProvider","register"),controller:a("$controllerProvider","register"),directive:a("$compileProvider","directive"),config:m,run:function(a){l.push(a);return this}};g&&m(g);return h})}})})(window)})(window);
     //# sourceMappingURL=angular-loader.min.js.map
     </script>
-<body layout="column">
+<body layout="column" ng-controller="RandomController as ctrl">
 
     <md-toolbar layout="row">
-        <md-button class="menu" hide-gt-sm ng-click="ul.toggleList()" aria-label="Show User List">
+        <md-button class="menu" hide-gt-sm ng-click="ctrl.toggleList()" aria-label="Show User List">
             <md-icon md-svg-icon="menu" ></md-icon>
         </md-button>
         <h1>Relationship Analytics</h1>
