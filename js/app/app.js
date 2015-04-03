@@ -29,6 +29,25 @@
         $log.debug("Hi kelvin");
         console.log($q);
 
+        var okToGreet = false;
+
+        var promise = new Promise(function(resolve, reject) {
+            // do a thing, possibly async, then…
+
+            if (okToGreet) {
+                resolve("Stuff worked!");
+            }
+            else {
+                reject(Error("It broke"));
+            }
+        });
+
+        promise.then(function(message){
+            alert(message);
+        }, function(message){
+            alert(message);
+        });
+
     };
 
     app.controller("RandomController", [
