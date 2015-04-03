@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="raApp">
 <head lang="en">
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- <link rel="shortcut icon" href="/static/img/u-request.ico"> -->
     <title>Relationship Analytics</title>
-    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
     <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.8.3/angular-material.min.css">
+    <link rel="stylesheet" href="/css/app/app.css">
     <script type="text/javascript">
     /*
      AngularJS v1.3.15
@@ -19,7 +20,52 @@
     "factory"),service:a("$provide","service"),value:a("$provide","value"),constant:a("$provide","constant","unshift"),animation:a("$animateProvider","register"),filter:a("$filterProvider","register"),controller:a("$controllerProvider","register"),directive:a("$compileProvider","directive"),config:m,run:function(a){l.push(a);return this}};g&&m(g);return h})}})})(window)})(window);
     //# sourceMappingURL=angular-loader.min.js.map
     </script>
-<body>
+<body layout="column">
+
+    <md-toolbar layout="row">
+        <md-button class="menu" hide-gt-sm ng-click="ul.toggleList()" aria-label="Show User List">
+            <md-icon md-svg-icon="menu" ></md-icon>
+        </md-button>
+        <h1>Relationship Analytics</h1>
+    </md-toolbar>
+
+    <div flex layout="row">
+        <!--Hi-->
+        <md-sidenav md-is-locked-open="$mdMedia('gt-sm')" layout="column" class="md-whiteframe-z2">
+            <md-list layout="column">
+                <md-item>
+                    <md-button>
+                        <md-icon md-svg-src="/static/svg/avatar-1.svg" class="avatar"></md-icon>
+                        Lia Luogo
+                    </md-button>
+                </md-item>
+                <!-- List item #2 -->
+                <!--<md-item>-->
+                    <!--<md-button>-->
+                        <!--&lt;!&ndash;<md-icon md-svg-src="./assets/svg/avatar-4.svg" class="avatar"></md-icon>&ndash;&gt;-->
+                        <!--Lawrence Ray-->
+                    <!--</md-button>-->
+                <!--</md-item>-->
+                <!--<md-item>-->
+                    <!--<md-button>-->
+                        <!--&lt;!&ndash;<md-icon md-svg-src="./assets/svg/avatar-4.svg" class="avatar"></md-icon>&ndash;&gt;-->
+                        <!--Lawrence Ray-->
+                    <!--</md-button>-->
+                <!--</md-item>-->
+            </md-list>
+        </md-sidenav>
+
+        <md-content flex layout="column">
+            <h2>Lia Luogo</h2>
+            <p>
+                I love cheese, especially airedale queso. Cheese and biscuits halloumi cauliflower cheese cottage cheese
+                swiss boursin fondue caerphilly. Cow port-salut camembert de normandie macaroni cheese feta who moved my
+                cheese babybel boursin. Red leicester roquefort boursin squirty cheese jarlsberg blue castello caerphilly
+                chalk and cheese. Lancashire.
+            </p>
+        </md-content>
+    </div>
+
 
 
 <!--Angular JS-->
