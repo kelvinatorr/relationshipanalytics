@@ -26,27 +26,39 @@
     }]);
 
     var RandomController = function($mdSidenav, $mdBottomSheet, $log, $q) {
-        $log.debug("Hi kelvin");
-        console.log($q);
 
-        var okToGreet = false;
+        var self = this;
 
-        var promise = new Promise(function(resolve, reject) {
-            // do a thing, possibly async, then…
+        /**
+         * First hide the bottomsheet IF visible, then
+         * hide or Show the 'left' sideNav area
+         */
+        self.toggleSideMenu = function() {
+            var pending = $mdBottomSheet.hide() || $q.when(true);
 
-            if (okToGreet) {
-                resolve("Stuff worked!");
-            }
-            else {
-                reject(Error("It broke"));
-            }
-        });
+            pending.then(function(){
+                $mdSidenav('leftSideNav').toggle();
+            });
+        };
 
-        promise.then(function(message){
-            alert(message);
-        }, function(message){
-            alert(message);
-        });
+        //var okToGreet = false;
+        //
+        //var promise = new Promise(function(resolve, reject) {
+        //    // do a thing, possibly async, then…
+        //
+        //    if (okToGreet) {
+        //        resolve("Stuff worked!");
+        //    }
+        //    else {
+        //        reject(Error("It broke"));
+        //    }
+        //});
+        //
+        //promise.then(function(message){
+        //    alert(message);
+        //}, function(message){
+        //    alert(message);
+        //});
 
     };
 
