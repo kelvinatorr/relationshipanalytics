@@ -49,3 +49,10 @@ md-toolbar h1 {
 md-toolbar h1 {
     margin: auto;
 }
+
+/*This makes the content have padding*/
+#content  {
+    padding-left: 13px;
+    padding-right: 13px;
+    padding-top: 5px;
+}
