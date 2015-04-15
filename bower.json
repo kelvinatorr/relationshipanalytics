@@ -17,5 +17,6 @@
   ],
   "dependencies": {
     "google-map": "PolymerLabs/google-map#~0.3.0"
-  }
+  },
+  "devDependencies": {}
 }
