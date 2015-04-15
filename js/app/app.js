@@ -7,9 +7,9 @@
     app.config(['$mdThemingProvider', '$mdIconProvider', function($mdThemingProvider, $mdIconProvider){
 
         $mdIconProvider
-            .defaultIconSet("static/svg/avatars.svg", 128)
-            .icon("menu"       , "static/svg/menu.svg"        , 24);
-            //.icon("share"      , "./assets/svg/share.svg"       , 24)
+            .defaultIconSet("fonts/glyphicons-halflings-regular.svg", 128)
+            .icon("menu", "static/svg/menu.svg", 24)
+            //.iconSet("glyphicons", "fonts/glyphicons-halflings-regular.svg", 24);
             //.icon("google_plus", "./assets/svg/google_plus.svg" , 512)
             //.icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
             //.icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
