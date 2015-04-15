@@ -7,10 +7,10 @@
     app.config(['$mdThemingProvider', '$mdIconProvider', function($mdThemingProvider, $mdIconProvider){
 
         $mdIconProvider
-            .defaultIconSet("fonts/glyphicons-halflings-regular.svg", 128)
+            .defaultIconSet("static/svg/svg-sprite-maps.svg", 128)
             .icon("menu", "static/svg/menu.svg", 24)
             //.iconSet("glyphicons", "fonts/glyphicons-halflings-regular.svg", 24);
-            //.icon("google_plus", "./assets/svg/google_plus.svg" , 512)
+            .icon("call", "static/svg/ic_call_24px.svg", 24);
             //.icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
             //.icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
             //.icon("phone"      , "./assets/svg/phone.svg"       , 512);
@@ -22,7 +22,7 @@
     }]);
 
     app.run(['$log',function($log){
-        $log.debug("starterApp + ngMaterial running kelvin...");
+        $log.debug("starterApp + ngMaterial running kelvins...");
     }]);
 
     var RandomController = function($mdSidenav, $mdBottomSheet, $log, $q) {
