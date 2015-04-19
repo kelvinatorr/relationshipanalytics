@@ -10,10 +10,23 @@
             .defaultIconSet("static/svg/svg-sprite-maps.svg", 128)
             .icon("menu", "static/svg/menu.svg", 24)
             //.iconSet("glyphicons", "fonts/glyphicons-halflings-regular.svg", 24);
-            .icon("call", "static/svg/ic_call_24px.svg", 24);
-            //.icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
-            //.icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
-            //.icon("phone"      , "./assets/svg/phone.svg"       , 512);
+            .icon("call", "static/svg/ic_call_24px.svg", 24)
+            .iconSet('action', 'static/svg/action-icons.svg', 24)
+            .iconSet('alert', 'static/svg/alert-icons.svg', 24)
+            .iconSet('av', 'static/svg/av-icons.svg', 24)
+            .iconSet('communication', 'static/svg/communication-icons.svg', 24)
+            .iconSet('content', 'static/svg/content-icons.svg', 24)
+            .iconSet('device', 'static/svg/device-icons.svg', 24)
+            .iconSet('editor', 'static/svg/editor-icons.svg', 24)
+            .iconSet('file', 'static/svg/file-icons.svg', 24)
+            .iconSet('hardware', 'static/svg/hardware-icons.svg', 24)
+            .iconSet('icons', 'static/svg/icons-icons.svg', 24)
+            .iconSet('image', 'static/svg/image-icons.svg', 24)
+            .iconSet('maps', 'static/svg/maps-icons.svg', 24)
+            .iconSet('navigation', 'static/svg/navigation-icons.svg', 24)
+            .iconSet('notification', 'static/svg/notification-icons.svg', 24)
+            .iconSet('social', 'static/svg/social-icons.svg', 24)
+            .iconSet('toggle', 'static/svg/toggle-icons.svg', 24);
 
         $mdThemingProvider.theme('default')
             .primaryPalette('brown')
