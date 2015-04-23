@@ -29,8 +29,8 @@
             .iconSet('toggle', 'static/svg/toggle-icons.svg', 24);
 
         $mdThemingProvider.theme('default')
-            .primaryPalette('brown')
-            .accentPalette('red');
+            .primaryPalette('light-blue')
+            .accentPalette('pink');
 
     }]);
 
