@@ -60,3 +60,7 @@ md-toolbar h1 {
 .ra-list-icon-button {
     margin-top: 8px;
 }
+
+label {
+    font-size: 18px
+}

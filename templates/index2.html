@@ -58,6 +58,19 @@
         <div flex  id="content">
             <md-content flex layout="column" class="md-padding">
                 <h2>Random Thing Picker</h2>
+                <form>
+                    <div layout layout-sm="column">
+                        <md-input-container flex>
+                            <label>Option</label>
+                            <input ng-model="user.firstName" placeholder="Enter an option to choose from">
+                        </md-input-container>
+                        <!--<md-input-container flex>-->
+                        <!--<label>Last Name</label>-->
+                        <!--<input ng-model="theMax">-->
+                        <!--</md-input-container>-->
+                    </div>
+                </form>
+
                 <md-list>
                     <!--<md-subheader class="md-no-sticky">Random Thing Picker</md-subheader>-->
                     <md-list-item layout="row">
