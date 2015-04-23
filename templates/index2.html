@@ -58,44 +58,50 @@
         <div flex  id="content">
             <md-content flex layout="column" class="md-padding">
                 <h2>Random Thing Picker</h2>
-                <form>
-                    <div layout layout-sm="column">
-                        <md-input-container flex>
-                            <label>Option</label>
-                            <input ng-model="user.firstName" placeholder="Enter an option to choose from">
-                        </md-input-container>
-                        <md-button class="md-raised md-primary">Add</md-button>
+                <div layout="row">
+                    <form flex-gt-sm="33" flex>
+                        <div layout="column">
+                            <md-input-container flex>
+                                <label>Option</label>
+                                <input ng-model="user.firstName" placeholder="Enter an option to choose from">
+                            </md-input-container>
+                            <md-button class="md-raised md-primary">Add</md-button>
+                        </div>
+                    </form>
+                </div>
+                <div layout="column">
+                    <div layout-gt-sm="row">
+                        <md-list flex-gt-sm="33">
+                            <!--<md-subheader class="md-no-sticky">Random Thing Picker</md-subheader>-->
+                            <md-list-item layout="row">
+                                <div flex="90" layout-align="start">
+                                    <h3> The Longest Restaurant Name Ever </h3>
+                                </div>
+                                <div layout-align="end center">
+                                    <md-button class="md-icon-button ra-list-icon-button" aria-label="Delete">
+                                        <md-icon md-svg-icon="action:delete"></md-icon>
+                                    </md-button>
+                                </div>
+
+                            </md-list-item>
+                            <md-list-item layout="row">
+                                <div flex="90" layout-align="start">
+                                    <h3> Chada </h3>
+                                </div>
+                                <div layout-align="end center">
+                                    <md-button class="md-icon-button ra-list-icon-button" aria-label="Delete">
+                                        <md-icon md-svg-icon="action:delete"></md-icon>
+                                    </md-button>
+                                </div>
+
+                            </md-list-item>
+                        </md-list>
                     </div>
-                </form>
+                    <section layout-sm="column" layout-gt-sm="row">
+                        <md-button flex-gt-sm="33" class="md-raised md-primary">Pick</md-button>
+                    </section>
+                </div>
 
-                <md-list>
-                    <!--<md-subheader class="md-no-sticky">Random Thing Picker</md-subheader>-->
-                    <md-list-item layout="row">
-                        <div flex="90" layout-align="start">
-                            <h3> The Longest Restaurant Name Ever </h3>
-                        </div>
-                        <div layout-align="end center">
-                            <md-button class="md-icon-button ra-list-icon-button" aria-label="Delete">
-                                <md-icon md-svg-icon="action:delete"></md-icon>
-                            </md-button>
-                        </div>
-
-                    </md-list-item>
-                    <md-list-item layout="row">
-                        <div flex="90" layout-align="start">
-                            <h3> Chada </h3>
-                        </div>
-                        <div layout-align="end center">
-                            <md-button class="md-icon-button ra-list-icon-button" aria-label="Delete">
-                                <md-icon md-svg-icon="action:delete"></md-icon>
-                            </md-button>
-                        </div>
-
-                    </md-list-item>
-                </md-list>
-                <section layout="row" layout-sm="column">
-                    <md-button class="md-raised md-primary">Pick</md-button>
-                </section>
             </md-content>
         </div>
 
