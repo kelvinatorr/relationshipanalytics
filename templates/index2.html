@@ -57,7 +57,7 @@
         </md-sidenav>
         <div flex  id="content">
             <md-content flex layout="column" class="md-padding">
-                <h2>Random Thing Picker</h2>
+                <h2 class="ra-section-label">Random Thing Picker</h2>
                 <div layout="row">
                     <form flex-gt-sm="33" flex>
                         <div layout="column">
@@ -65,11 +65,11 @@
                                 <label>Option</label>
                                 <input ng-model="user.firstName" placeholder="Enter an option to choose from">
                             </md-input-container>
-                            <md-button class="md-raised md-primary">Add</md-button>
+                            <md-button class="md-raised">Add</md-button>
                         </div>
                     </form>
                 </div>
-                <div layout="column">
+                <div layout="column" id="ra-list-div">
                     <div layout-gt-sm="row">
                         <md-list flex-gt-sm="33">
                             <!--<md-subheader class="md-no-sticky">Random Thing Picker</md-subheader>-->
@@ -98,7 +98,7 @@
                         </md-list>
                     </div>
                     <section layout-sm="column" layout-gt-sm="row">
-                        <md-button flex-gt-sm="33" class="md-raised md-primary">Pick</md-button>
+                        <md-button flex-gt-sm="33" class="md-raised md-accent">Pick</md-button>
                     </section>
                 </div>
 

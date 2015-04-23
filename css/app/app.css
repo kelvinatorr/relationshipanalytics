@@ -64,3 +64,12 @@ md-toolbar h1 {
 label {
     font-size: 18px;
 }
+
+#ra-list-div {
+    margin-top: 13px;
+}
+
+h2.ra-section-label {
+    margin-top: 13px;
+    margin-bottom: 13px;
+}
