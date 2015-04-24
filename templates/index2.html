@@ -87,7 +87,10 @@
                         </md-list>
                     </div>
                     <section layout-sm="column" layout-gt-sm="row">
-                        <md-button flex-gt-sm="33" class="md-raised md-accent">Pick</md-button>
+                        <md-button flex-gt-sm="33" class="md-raised md-accent" ng-disabled="ctrl.options.length < 2"
+                                ng-click="ctrl.pickRandom()">
+                            Pick
+                        </md-button>
                     </section>
                 </div>
 

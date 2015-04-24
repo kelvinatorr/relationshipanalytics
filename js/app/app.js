@@ -103,8 +103,18 @@
             self.options.splice(idx,1);
         };
 
-        self.pick = function() {
 
+        /**
+         * The option that was randomly picked.
+         */
+        self.pick;
+
+        /**
+         * Bound to the pick button, selects an option from the options array randomly
+         */
+        self.pickRandom = function() {
+            self.pick = self.options[Math.floor(Math.random() * self.options.length)];
+            console.log(self.pick);
         };
 
 
