@@ -51,9 +51,9 @@
                         <div layout="column">
                             <md-input-container flex>
                                 <label>Option</label>
-                                <input ng-model="user.firstName" placeholder="Enter an option to choose from">
+                                <input ng-model="ctrl.newOption.description" placeholder="Enter an option to choose from">
                             </md-input-container>
-                            <md-button class="md-raised">Add</md-button>
+                            <md-button class="md-raised" ng-click="ctrl.add()">Add</md-button>
                         </div>
                     </form>
                 </div>
@@ -61,28 +61,29 @@
                     <div layout-gt-sm="row">
                         <md-list flex-gt-sm="33">
                             <!--<md-subheader class="md-no-sticky">Random Thing Picker</md-subheader>-->
-                            <md-list-item layout="row">
+                            <md-list-item layout="row" ng-repeat="o in ctrl.options">
                                 <div flex="90" layout-align="start">
-                                    <h3> The Longest Restaurant Name Ever </h3>
+                                    <h3> ||o.description|| </h3>
                                 </div>
                                 <div layout-align="end center">
-                                    <md-button class="md-icon-button ra-list-icon-button" aria-label="Delete">
+                                    <md-button class="md-icon-button ra-list-icon-button" aria-label="Delete"
+                                            ng-click="ctrl.delete(o.id)">
                                         <md-icon md-svg-icon="action:delete"></md-icon>
                                     </md-button>
                                 </div>
 
                             </md-list-item>
-                            <md-list-item layout="row">
-                                <div flex="90" layout-align="start">
-                                    <h3> Chada </h3>
-                                </div>
-                                <div layout-align="end center">
-                                    <md-button class="md-icon-button ra-list-icon-button" aria-label="Delete">
-                                        <md-icon md-svg-icon="action:delete"></md-icon>
-                                    </md-button>
-                                </div>
+                            <!--<md-list-item layout="row">-->
+                                <!--<div flex="90" layout-align="start">-->
+                                    <!--<h3> Chada </h3>-->
+                                <!--</div>-->
+                                <!--<div layout-align="end center">-->
+                                    <!--<md-button class="md-icon-button ra-list-icon-button" aria-label="Delete">-->
+                                        <!--<md-icon md-svg-icon="action:delete"></md-icon>-->
+                                    <!--</md-button>-->
+                                <!--</div>-->
 
-                            </md-list-item>
+                            <!--</md-list-item>-->
                         </md-list>
                     </div>
                     <section layout-sm="column" layout-gt-sm="row">
