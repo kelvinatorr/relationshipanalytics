@@ -99,7 +99,6 @@
          */
         self.delete = function(id) {
             var idx = self.options.map(function(e){return e.id}).indexOf(id);
-            console.log(idx);
             self.options.splice(idx,1);
         };
 
@@ -114,7 +113,6 @@
          */
         self.pickRandom = function() {
             self.pick = self.options[Math.floor(Math.random() * self.options.length)];
-            console.log(self.pick);
         };
 
 
