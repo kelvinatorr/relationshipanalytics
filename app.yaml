@@ -47,3 +47,15 @@ handlers:
   script: main.application
   secure: always
   login: required
+
+skip_files:
+- ^(.*/)?#.*#$
+- ^(.*/)?.*~$
+- ^(.*/)?.*\.py[co]$
+- ^(.*/)?.*/RCS/.*$
+- ^(.*/)?\..*$
+- ^node_modules/(.*/)?
+- \.gitignore
+- ^\.git/.*
+- ^\.idea/.*
+- ^(.*/)?tests$
