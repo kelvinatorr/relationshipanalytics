@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html ng-app="raApp">
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- <link rel="shortcut icon" href="/static/img/u-request.ico"> -->
+    <title>Relationship Analytics</title>
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.8.3/angular-material.min.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/css/app/app.css">
+    <script type="text/javascript">
+    /*
+     AngularJS v1.3.15
+     (c) 2010-2014 Google, Inc. http://angularjs.org
+     License: MIT
+    */
+    (function(){'use strict';function d(b){return function(){var c=arguments[0],e;e="["+(b?b+":":"")+c+"] http://errors.angularjs.org/1.3.15/"+(b?b+"/":"")+c;for(c=1;c<arguments.length;c++){e=e+(1==c?"?":"&")+"p"+(c-1)+"=";var d=encodeURIComponent,a;a=arguments[c];a="function"==typeof a?a.toString().replace(/ \{[\s\S]*$/,""):"undefined"==typeof a?"undefined":"string"!=typeof a?JSON.stringify(a):a;e+=d(a)}return Error(e)}}(function(b){function c(a,c,b){return a[c]||(a[c]=b())}var e=d("$injector"),n=d("ng");
+    b=c(b,"angular",Object);b.$$minErr=b.$$minErr||d;return c(b,"module",function(){var a={};return function(b,d,g){if("hasOwnProperty"===b)throw n("badname","module");d&&a.hasOwnProperty(b)&&(a[b]=null);return c(a,b,function(){function a(b,d,e,f){f||(f=c);return function(){f[e||"push"]([b,d,arguments]);return h}}if(!d)throw e("nomod",b);var c=[],k=[],l=[],m=a("$injector","invoke","push",k),h={_invokeQueue:c,_configBlocks:k,_runBlocks:l,requires:d,name:b,provider:a("$provide","provider"),factory:a("$provide",
+    "factory"),service:a("$provide","service"),value:a("$provide","value"),constant:a("$provide","constant","unshift"),animation:a("$animateProvider","register"),filter:a("$filterProvider","register"),controller:a("$controllerProvider","register"),directive:a("$compileProvider","directive"),config:m,run:function(a){l.push(a);return this}};g&&m(g);return h})}})})(window)})(window);
+    //# sourceMappingURL=angular-loader.min.js.map
+    </script>
+<body layout="column" ng-controller="RandomController as ctrl">
+
+    <md-toolbar layout="row">
+        <md-button class="menu" hide-gt-sm ng-click="ctrl.toggleSideMenu()" aria-label="Show Side Menu">
+            <md-icon md-svg-icon="menu" ></md-icon>
+        </md-button>
+        <h1>Random Thing Picker</h1>
+    </md-toolbar>
+
+    <div flex layout="row">
+        <!--Hi-->
+        <md-sidenav md-is-locked-open="$mdMedia('gt-sm')" layout="column" class="md-whiteframe-z2" md-component-id="leftSideNav">
+            <md-list layout="column">
+                <md-item>
+                    <md-button>
+                        <md-icon md-svg-src="/static/svg/dice-5.svg" class="avatar"></md-icon>
+                        Random Thing Picker
+                    </md-button>
+                </md-item>
+
+            </md-list>
+        </md-sidenav>
+        <div flex  id="content">
+            <md-content flex layout="column" class="md-padding">
+                <!--<h2 class="ra-section-label">Random Thing Picker</h2>-->
+                <div layout="row">
+                    <form flex-gt-sm="33" flex>
+                        <div layout="column">
+                            <md-input-container flex>
+                                <label>Option</label>
+                                <input ng-model="ctrl.newOption.description" placeholder="Enter an option to choose from">
+                            </md-input-container>
+                            <md-button class="md-raised" ng-click="ctrl.add()">Add</md-button>
+                        </div>
+                    </form>
+                </div>
+                <div layout="column" id="ra-list-div">
+                    <div layout-gt-sm="row">
+                        <md-list flex-gt-sm="33">
+                            <!--<md-subheader class="md-no-sticky">Random Thing Picker</md-subheader>-->
+                            <md-list-item layout="row" ng-repeat="o in ctrl.options">
+                                <div flex="90" layout-align="start">
+                                    <h3> ||o.description|| </h3>
+                                </div>
+                                <div layout-align="end center">
+                                    <md-button class="md-icon-button ra-list-icon-button" aria-label="Delete"
+                                            ng-click="ctrl.delete(o.id)">
+                                        <md-icon md-svg-icon="action:delete"></md-icon>
+                                    </md-button>
+                                </div>
+
+                            </md-list-item>
+                            <!--<md-list-item layout="row">-->
+                                <!--<div flex="90" layout-align="start">-->
+                                    <!--<h3> Chada </h3>-->
+                                <!--</div>-->
+                                <!--<div layout-align="end center">-->
+                                    <!--<md-button class="md-icon-button ra-list-icon-button" aria-label="Delete">-->
+                                        <!--<md-icon md-svg-icon="action:delete"></md-icon>-->
+                                    <!--</md-button>-->
+                                <!--</div>-->
+
+                            <!--</md-list-item>-->
+                        </md-list>
+                    </div>
+                    <div ng-if="ctrl.pick" layout="row">
+                        <div flex-gt-sm="33" flex layout="row" layout-align="center center">
+                            <h1>||ctrl.pick.description||</h1>
+                        </div>
+                    </div>
+                    <section layout-sm="column" layout-gt-sm="row">
+                        <md-button flex-gt-sm="33" class="md-raised md-accent" ng-disabled="ctrl.options.length < 2"
+                                ng-click="ctrl.pickRandom()">
+                            Pick
+                        </md-button>
+                    </section>
+                </div>
+
+            </md-content>
+        </div>
+
+
+    </div>
+
+
+<!--Angular JS-->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.8.3/angular-material.min.js"></script>
+<!-- app-->
+<script src="/build/js/app.min.js"></script>
+</body>
+</html>
