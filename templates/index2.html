@@ -91,12 +91,18 @@
                             <h1>||ctrl.pick.description||</h1>
                         </div>
                     </div>
-                    <section layout-sm="column" layout-gt-sm="row">
-                        <md-button flex-gt-sm="33" class="md-raised md-accent" ng-disabled="ctrl.options.length < 2"
-                                ng-click="ctrl.pickRandom()">
-                            Pick
-                        </md-button>
-                    </section>
+                    <div layout-sm="column" layout-gt-sm="row">
+                        <div flex-gt-sm="33" layout="column">
+                            <md-button class="md-raised md-accent" ng-disabled="ctrl.options.length < 2"
+                                        ng-click="ctrl.pickRandom()">
+                                Pick
+                            </md-button>
+                            <md-button flex-gt-sm="33" class="md-raised" ng-disabled="false"
+                                       ng-click="" id="raResetButton">
+                                Reset
+                            </md-button>
+                        </div>
+                    </div>
                 </div>
 
             </md-content>
