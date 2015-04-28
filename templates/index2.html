@@ -97,8 +97,8 @@
                                         ng-click="ctrl.pickRandom()">
                                 Pick
                             </md-button>
-                            <md-button flex-gt-sm="33" class="md-raised" ng-disabled="false"
-                                       ng-click="" id="raResetButton">
+                            <md-button flex-gt-sm="33" class="md-raised" ng-hide="ctrl.hasNotPicked"
+                                       ng-click="ctrl.reset()" id="raResetButton">
                                 Reset
                             </md-button>
                         </div>

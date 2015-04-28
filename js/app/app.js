@@ -102,6 +102,17 @@
             self.options.splice(idx,1);
         };
 
+        /**
+         * True if the pick button has been pressed.
+         * @type {boolean}
+         */
+        self.hasNotPicked = true;
+
+        /**
+         * The number of times the pick button has been pressed.
+         * @type {number}
+         */
+        self.pickCount = 0;
 
         /**
          * The option that was randomly picked.
@@ -113,8 +124,19 @@
          */
         self.pickRandom = function() {
             self.pick = self.options[Math.floor(Math.random() * self.options.length)];
+            if(self.hasNotPicked) self.hasNotPicked = false;
         };
 
+        /**
+         * Resets the app state to pristine, no options, no picks.
+         */
+        self.reset = function() {
+            self.options = [];
+            optionCount = 0;
+            self.newOption  = generateNewOption();
+            self.pick = undefined;
+            self.hasNotPicked = true;
+        }
 
 
     };
