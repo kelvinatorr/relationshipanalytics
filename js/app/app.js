@@ -125,6 +125,7 @@
         self.pickRandom = function() {
             self.pick = self.options[Math.floor(Math.random() * self.options.length)];
             if(self.hasNotPicked) self.hasNotPicked = false;
+            self.pickCount += 1;
         };
 
         /**
@@ -136,6 +137,7 @@
             self.newOption  = generateNewOption();
             self.pick = undefined;
             self.hasNotPicked = true;
+            self.pickCount = 0;
         }
 
 

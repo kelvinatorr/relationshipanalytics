@@ -87,12 +87,12 @@
                         </md-list>
                     </div>
                     <div ng-if="ctrl.pick" layout="row">
-                        <div flex-gt-sm="33" flex layout="row" layout-align="center center">
+                        <div flex-gt-sm="33" flex layout="column" layout-align="center center">
                             <h1>||ctrl.pick.description||</h1>
                         </div>
                     </div>
                     <div layout-sm="column" layout-gt-sm="row">
-                        <div flex-gt-sm="33" layout="column">
+                        <div flex-gt-sm="33" layout="column" layout-align="center">
                             <md-button class="md-raised md-accent" ng-disabled="ctrl.options.length < 2"
                                         ng-click="ctrl.pickRandom()">
                                 Pick
@@ -101,6 +101,7 @@
                                        ng-click="ctrl.reset()" id="raResetButton">
                                 Reset
                             </md-button>
+                            <p id="raRunCounter" ng-hide="ctrl.hasNotPicked">Runs: ||ctrl.pickCount||</p>
                         </div>
                     </div>
                 </div>
