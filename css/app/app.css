@@ -83,3 +83,7 @@ h2.ra-section-label {
     margin: auto;
     font-size:13px;
 }
+
+.md-button {
+    min-height: 2.25rem;
+}
