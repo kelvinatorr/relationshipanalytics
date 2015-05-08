@@ -44,7 +44,12 @@
         $log.debug("starterApp + ngMaterial running kelvins...");
     }]);
 
-    var RandomController = function($mdSidenav, $mdBottomSheet, $log, $q, $timeout) {
+    app.controller("RandomController", [
+        '$mdSidenav', '$mdBottomSheet', '$q','$timeout'
+        ,RandomController
+    ]);
+
+    function RandomController($mdSidenav, $mdBottomSheet, $q, $timeout) {
 
         var self = this;
 
@@ -151,12 +156,6 @@
 
 
     };
-
-    app.controller("RandomController", [
-        '$mdSidenav', '$mdBottomSheet', '$log','$q','$timeout'
-        ,RandomController
-    ]);
-
 
 
 })();
