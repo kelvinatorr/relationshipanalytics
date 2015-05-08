@@ -44,7 +44,12 @@
         $log.debug("starterApp + ngMaterial running kelvins...");
     }]);
 
-    var RandomController = function($mdSidenav, $mdBottomSheet, $log, $q) {
+    app.controller("RandomController", [
+        '$mdSidenav', '$mdBottomSheet', '$q','$timeout'
+        ,RandomController
+    ]);
+
+    function RandomController($mdSidenav, $mdBottomSheet, $q, $timeout) {
 
         var self = this;
 
@@ -102,28 +107,55 @@
             self.options.splice(idx,1);
         };
 
+        /**
+         * True if the pick button has been pressed.
+         * @type {boolean}
+         */
+        self.hasNotPicked = true;
+
+        /**
+         * The number of times the pick button has been pressed.
+         * @type {number}
+         */
+        self.pickCount = 0;
 
         /**
          * The option that was randomly picked.
          */
         self.pick;
 
+        self.picking = false;
+
         /**
          * Bound to the pick button, selects an option from the options array randomly
          */
         self.pickRandom = function() {
-            self.pick = self.options[Math.floor(Math.random() * self.options.length)];
+            // clear the pick.
+            self.pick  = '';
+            // disable the pick button
+            self.picking = true;
+            $timeout(function(){
+                self.pick = self.options[Math.floor(Math.random() * self.options.length)];
+                if(self.hasNotPicked) self.hasNotPicked = false;
+                self.pickCount += 1;
+                self.picking = false;
+            }, 500);
         };
 
+        /**
+         * Resets the app state to pristine, no options, no picks.
+         */
+        self.reset = function() {
+            self.options = [];
+            optionCount = 0;
+            self.newOption  = generateNewOption();
+            self.pick = undefined;
+            self.hasNotPicked = true;
+            self.pickCount = 0;
+        }
 
 
     };
-
-    app.controller("RandomController", [
-        '$mdSidenav', '$mdBottomSheet', '$log','$q',
-        RandomController
-    ]);
-
 
 
 })();
