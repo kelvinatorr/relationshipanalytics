@@ -93,7 +93,7 @@
                     </div>
                     <div layout-sm="column" layout-gt-sm="row">
                         <div flex-gt-sm="33" layout="column" layout-align="center">
-                            <md-button class="md-raised md-accent" ng-disabled="ctrl.options.length < 2"
+                            <md-button class="md-raised md-accent" ng-disabled="ctrl.options.length < 2 || ctrl.picking"
                                         ng-click="ctrl.pickRandom()">
                                 Pick
                             </md-button>

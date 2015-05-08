@@ -44,7 +44,7 @@
         $log.debug("starterApp + ngMaterial running kelvins...");
     }]);
 
-    var RandomController = function($mdSidenav, $mdBottomSheet, $log, $q) {
+    var RandomController = function($mdSidenav, $mdBottomSheet, $log, $q, $timeout) {
 
         var self = this;
 
@@ -119,13 +119,22 @@
          */
         self.pick;
 
+        self.picking = false;
+
         /**
          * Bound to the pick button, selects an option from the options array randomly
          */
         self.pickRandom = function() {
-            self.pick = self.options[Math.floor(Math.random() * self.options.length)];
-            if(self.hasNotPicked) self.hasNotPicked = false;
-            self.pickCount += 1;
+            // clear the pick.
+            self.pick  = '';
+            // disable the pick button
+            self.picking = true;
+            $timeout(function(){
+                self.pick = self.options[Math.floor(Math.random() * self.options.length)];
+                if(self.hasNotPicked) self.hasNotPicked = false;
+                self.pickCount += 1;
+                self.picking = false;
+            }, 500);
         };
 
         /**
@@ -144,8 +153,8 @@
     };
 
     app.controller("RandomController", [
-        '$mdSidenav', '$mdBottomSheet', '$log','$q',
-        RandomController
+        '$mdSidenav', '$mdBottomSheet', '$log','$q','$timeout'
+        ,RandomController
     ]);
 
 
