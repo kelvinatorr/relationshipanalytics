@@ -1,5 +1,5 @@
 application: relationshipanalytics
-version: v1-7
+version: v7
 runtime: python27
 api_version: 1
 threadsafe: true

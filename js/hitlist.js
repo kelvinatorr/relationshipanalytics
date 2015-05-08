@@ -14,8 +14,7 @@ ra.hitlist = ra.hitlist || {};
  * Client ID of the application (from the APIs Console).
  * @type {string}
  */
-ra.hitlist.CLIENT_ID =
-    '356591658043-vpfvi9qo72fo6jb7jb2vgh9b2r1dlfhc.apps.googleusercontent.com';
+ra.hitlist.CLIENT_ID = '356591658043-vpfvi9qo72fo6jb7jb2vgh9b2r1dlfhc.apps.googleusercontent.com';
 
 /**
  * Scopes used by the application.
